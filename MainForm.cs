@@ -6535,7 +6535,7 @@ namespace iSpyApplication
             this.btn_door_view.Name = "btn_door_view";
             this.btn_door_view.Size = new System.Drawing.Size(82, 33);
             this.btn_door_view.TabIndex = 23;
-            this.btn_door_view.Text = "Door View";
+            this.btn_door_view.Text = "Off";
             this.btn_door_view.UseVisualStyleBackColor = true;
             this.btn_door_view.Click += new System.EventHandler(this.btn_door_view_Click);
             // 
@@ -6545,7 +6545,7 @@ namespace iSpyApplication
             this.btnCamPtz.Name = "btnCamPtz";
             this.btnCamPtz.Size = new System.Drawing.Size(103, 33);
             this.btnCamPtz.TabIndex = 22;
-            this.btnCamPtz.Text = "PTZ";
+            this.btnCamPtz.Text = "PTZ On";
             this.btnCamPtz.UseVisualStyleBackColor = true;
             this.btnCamPtz.Click += new System.EventHandler(this.button1_Click);
             // 
@@ -7123,10 +7123,12 @@ namespace iSpyApplication
         
         private void btn_door_view_Click(object sender, EventArgs e)
         {
-            var cams = this.GetCameraWindow(2);
-            cams.Calibrating = true;
-            cams.PTZ.SendPTZCommand("1");
-            Console.WriteLine(cams);
+            _timer.Stop();
+            _timer.Dispose();
+            //var cams = this.GetCameraWindow(2);
+            //cams.Calibrating = true;
+            //cams.PTZ.SendPTZCommand("1");
+            //Console.WriteLine(cams);
         }
         #endregion
         private void tsslPRO_Click(object sender, EventArgs e)
@@ -7191,6 +7193,7 @@ namespace iSpyApplication
         }
         private void TimeLapePTZCam(Object source, ElapsedEventArgs e)
         {
+            _timer.Stop();
             string camTriggedName;
             string filePath1 = @"C:\Users\TDG 2\Desktop\New folder\Ispy1\Ispy1\bin\Debug\net8.0\file.txt";
             List<string> data = new List<string>();
@@ -7198,25 +7201,25 @@ namespace iSpyApplication
             if (content != "")
             {
                 data = content.Split(Convert.ToChar("-")).ToList();
-                camTriggedName = data[1];
+                camTriggedName = data[1].Replace("\r","").Replace("\n","");
                 using (StreamWriter sw = new StreamWriter(filePath1))
                 {
-                    _timer.Stop();
+                    
                     var cams = this.GetCameraWindow(2);
                     // Write some text to the file
-                    sw.WriteLine("");
-                    foreach (var preset in cams.PTZ.ONVIFPresets)
+                    var presetPoistion = cams.PTZ.ONVIFPresets.ToList();
+                    foreach (var preset in presetPoistion)
                     {
                         if (preset.Name == camTriggedName)
                         {
                             cams.Calibrating = true;
+                            sw.Write(string.Empty);
                             cams.PTZ.SendPTZCommand(preset.token);
                         }
                     }
                 }
-                _timer.Start();
             }
-            
+            _timer.Start();
         }
     }
 }
