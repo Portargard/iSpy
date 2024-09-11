@@ -587,6 +587,8 @@ namespace iSpyApplication
                 Logger.LogException(ex);
             }
             //TimeLapePTZCam();
+            btn_door_view.Enabled = false;
+            btnCamPtz.Enabled = true;
         }
 
         public static DateTime NeedsMediaRefresh
@@ -7119,10 +7121,14 @@ namespace iSpyApplication
             _timer.Interval = 5000; // Khoảng thời gian 2 giây
             _timer.Elapsed += TimeLapePTZCam;
             _timer.Start();
+            btn_door_view.Enabled = true;
+            btnCamPtz.Enabled = false;
         }
         
         private void btn_door_view_Click(object sender, EventArgs e)
         {
+            btn_door_view.Enabled = false;
+            btnCamPtz.Enabled = true;
             _timer.Stop();
             _timer.Dispose();
             //var cams = this.GetCameraWindow(2);
@@ -7196,29 +7202,33 @@ namespace iSpyApplication
             _timer.Stop();
             string camTriggedName;
             string filePath1 = @"C:\Users\TDG 2\Desktop\New folder\Ispy1\Ispy1\bin\Debug\net8.0\file.txt";
-            List<string> data = new List<string>();
-            string content = File.ReadAllText(filePath1);
-            if (content != "")
+            if (File.Exists(filePath1))
             {
-                data = content.Split(Convert.ToChar("-")).ToList();
-                camTriggedName = data[1].Replace("\r","").Replace("\n","");
-                using (StreamWriter sw = new StreamWriter(filePath1))
+                List<string> data = new List<string>();
+                string content = File.ReadAllText(filePath1);
+                if (content != "")
                 {
-                    
-                    var cams = this.GetCameraWindow(2);
-                    // Write some text to the file
-                    var presetPoistion = cams.PTZ.ONVIFPresets.ToList();
-                    foreach (var preset in presetPoistion)
+                    data = content.Split(Convert.ToChar("-")).ToList();
+                    camTriggedName = data[1].Replace("\r", "").Replace("\n", "");
+                    using (StreamWriter sw = new StreamWriter(filePath1))
                     {
-                        if (preset.Name == camTriggedName)
+
+                        var cams = this.GetCameraWindow(2);
+                        // Write some text to the file
+                        var presetPoistion = cams.PTZ.ONVIFPresets.ToList();
+                        foreach (var preset in presetPoistion)
                         {
-                            cams.Calibrating = true;
-                            sw.Write(string.Empty);
-                            cams.PTZ.SendPTZCommand(preset.token);
+                            if (preset.Name == camTriggedName)
+                            {
+                                cams.Calibrating = true;
+                                sw.Write(string.Empty);
+                                cams.PTZ.SendPTZCommand(preset.token);
+                            }
                         }
                     }
                 }
-            }
+            }  
+            
             _timer.Start();
         }
     }
