@@ -196,6 +196,7 @@ namespace iSpyApplication
         private MenuItem menuItem34;
         private Button btnCamPtz;
         private Button btn_door_view;
+        private ComboBox cmb_PTZCam;
         private ToolStripMenuItem openWebInterfaceToolStripMenuItem;
         
 
@@ -4959,6 +4960,7 @@ namespace iSpyApplication
             this.archiveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.cmb_PTZCam = new System.Windows.Forms.ComboBox();
             this.ctxtMainForm.SuspendLayout();
             this.toolStripMenu.SuspendLayout();
             this.ctxtMnu.SuspendLayout();
@@ -5858,7 +5860,7 @@ namespace iSpyApplication
             this.toolStripMenu.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
             this.toolStripMenu.Location = new System.Drawing.Point(0, 0);
             this.toolStripMenu.Name = "toolStripMenu";
-            this.toolStripMenu.Size = new System.Drawing.Size(887, 39);
+            this.toolStripMenu.Size = new System.Drawing.Size(917, 39);
             this.toolStripMenu.TabIndex = 0;
             this.toolStripMenu.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.ToolStrip1ItemClicked);
             // 
@@ -6449,7 +6451,7 @@ namespace iSpyApplication
             this.tsslPRO});
             this.statusStrip1.Location = new System.Drawing.Point(0, 533);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(887, 30);
+            this.statusStrip1.Size = new System.Drawing.Size(917, 30);
             this.statusStrip1.TabIndex = 0;
             // 
             // _tsslStats
@@ -6505,7 +6507,7 @@ namespace iSpyApplication
             this._pnlContent.Location = new System.Drawing.Point(0, 0);
             this._pnlContent.Margin = new System.Windows.Forms.Padding(0);
             this._pnlContent.Name = "_pnlContent";
-            this._pnlContent.Size = new System.Drawing.Size(887, 139);
+            this._pnlContent.Size = new System.Drawing.Size(917, 139);
             this._pnlContent.TabIndex = 20;
             // 
             // splitContainer2
@@ -6517,6 +6519,7 @@ namespace iSpyApplication
             // 
             // splitContainer2.Panel1
             // 
+            this.splitContainer2.Panel1.Controls.Add(this.cmb_PTZCam);
             this.splitContainer2.Panel1.Controls.Add(this.btn_door_view);
             this.splitContainer2.Panel1.Controls.Add(this.btnCamPtz);
             this.splitContainer2.Panel1.Controls.Add(this.flowPreview);
@@ -6527,15 +6530,15 @@ namespace iSpyApplication
             // 
             this.splitContainer2.Panel2.Controls.Add(this.flCommands);
             this.splitContainer2.Panel2.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.splitContainer2.Size = new System.Drawing.Size(887, 139);
-            this.splitContainer2.SplitterDistance = 630;
+            this.splitContainer2.Size = new System.Drawing.Size(917, 139);
+            this.splitContainer2.SplitterDistance = 651;
             this.splitContainer2.TabIndex = 88;
             // 
             // btn_door_view
             // 
-            this.btn_door_view.Location = new System.Drawing.Point(483, 3);
+            this.btn_door_view.Location = new System.Drawing.Point(448, 3);
             this.btn_door_view.Name = "btn_door_view";
-            this.btn_door_view.Size = new System.Drawing.Size(82, 33);
+            this.btn_door_view.Size = new System.Drawing.Size(67, 26);
             this.btn_door_view.TabIndex = 23;
             this.btn_door_view.Text = "Off";
             this.btn_door_view.UseVisualStyleBackColor = true;
@@ -6543,9 +6546,9 @@ namespace iSpyApplication
             // 
             // btnCamPtz
             // 
-            this.btnCamPtz.Location = new System.Drawing.Point(370, 3);
+            this.btnCamPtz.Location = new System.Drawing.Point(366, 4);
             this.btnCamPtz.Name = "btnCamPtz";
-            this.btnCamPtz.Size = new System.Drawing.Size(103, 33);
+            this.btnCamPtz.Size = new System.Drawing.Size(76, 25);
             this.btnCamPtz.TabIndex = 22;
             this.btnCamPtz.Text = "PTZ On";
             this.btnCamPtz.UseVisualStyleBackColor = true;
@@ -6561,7 +6564,7 @@ namespace iSpyApplication
             this.flowPreview.Margin = new System.Windows.Forms.Padding(0);
             this.flowPreview.Name = "flowPreview";
             this.flowPreview.Padding = new System.Windows.Forms.Padding(2);
-            this.flowPreview.Size = new System.Drawing.Size(630, 100);
+            this.flowPreview.Size = new System.Drawing.Size(651, 100);
             this.flowPreview.TabIndex = 0;
             this.flowPreview.MouseDown += new System.Windows.Forms.MouseEventHandler(this.flowPreview_MouseDown);
             this.flowPreview.MouseEnter += new System.EventHandler(this.flowPreview_MouseEnter);
@@ -6575,7 +6578,7 @@ namespace iSpyApplication
             this.mediaPanelControl1.Margin = new System.Windows.Forms.Padding(0);
             this.mediaPanelControl1.Name = "mediaPanelControl1";
             this.mediaPanelControl1.Padding = new System.Windows.Forms.Padding(0, 0, 0, 2);
-            this.mediaPanelControl1.Size = new System.Drawing.Size(630, 39);
+            this.mediaPanelControl1.Size = new System.Drawing.Size(651, 39);
             this.mediaPanelControl1.TabIndex = 21;
             this.mediaPanelControl1.Load += new System.EventHandler(this.mediaPanelControl1_Load);
             // 
@@ -6587,7 +6590,7 @@ namespace iSpyApplication
             this.flCommands.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flCommands.Location = new System.Drawing.Point(0, 0);
             this.flCommands.Name = "flCommands";
-            this.flCommands.Size = new System.Drawing.Size(253, 139);
+            this.flCommands.Size = new System.Drawing.Size(262, 139);
             this.flCommands.TabIndex = 0;
             this.flCommands.MouseDown += new System.Windows.Forms.MouseEventHandler(this.flCommands_MouseDown);
             this.flCommands.MouseEnter += new System.EventHandler(this.flCommands_MouseEnter);
@@ -6618,7 +6621,7 @@ namespace iSpyApplication
             // 
             this.splitContainer1.Panel2.Controls.Add(this._pnlContent);
             this.splitContainer1.Panel2MinSize = 20;
-            this.splitContainer1.Size = new System.Drawing.Size(887, 494);
+            this.splitContainer1.Size = new System.Drawing.Size(917, 494);
             this.splitContainer1.SplitterDistance = 351;
             this.splitContainer1.TabIndex = 21;
             // 
@@ -6633,7 +6636,7 @@ namespace iSpyApplication
             this._pnlCameras.Location = new System.Drawing.Point(0, 0);
             this._pnlCameras.Margin = new System.Windows.Forms.Padding(0);
             this._pnlCameras.Name = "_pnlCameras";
-            this._pnlCameras.Size = new System.Drawing.Size(887, 351);
+            this._pnlCameras.Size = new System.Drawing.Size(917, 351);
             this._pnlCameras.TabIndex = 19;
             this._pnlCameras.Scroll += new System.Windows.Forms.ScrollEventHandler(this._pnlCameras_Scroll);
             this._pnlCameras.MouseDown += new System.Windows.Forms.MouseEventHandler(this._pnlCameras_MouseDown);
@@ -6711,10 +6714,18 @@ namespace iSpyApplication
             this.deleteToolStripMenuItem.Text = "Delete";
             this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
             // 
+            // cmb_PTZCam
+            // 
+            this.cmb_PTZCam.FormattingEnabled = true;
+            this.cmb_PTZCam.Location = new System.Drawing.Point(521, 5);
+            this.cmb_PTZCam.Name = "cmb_PTZCam";
+            this.cmb_PTZCam.Size = new System.Drawing.Size(121, 24);
+            this.cmb_PTZCam.TabIndex = 24;
+            // 
             // MainForm
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-            this.ClientSize = new System.Drawing.Size(887, 563);
+            this.ClientSize = new System.Drawing.Size(917, 563);
             this.ContextMenuStrip = this.ctxtTaskbar;
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.toolStripMenu);
@@ -7200,7 +7211,8 @@ namespace iSpyApplication
         private void TimeLapePTZCam(Object source, ElapsedEventArgs e)
         {
             _timer.Stop();
-            string camTriggedName;
+            var allPTZCam = GetPTZCamera();
+            string camTriggedName,cameraPTZName;
             string filePath1 = @"C:\Users\TDG 2\Desktop\New folder\Ispy1\Ispy1\bin\Debug\net8.0\file.txt";
             if (File.Exists(filePath1))
             {
@@ -7209,11 +7221,12 @@ namespace iSpyApplication
                 if (content != "")
                 {
                     data = content.Split(Convert.ToChar("-")).ToList();
+                    cameraPTZName = data[0].Replace("\r", "").Replace("\n", "");
                     camTriggedName = data[1].Replace("\r", "").Replace("\n", "");
                     using (StreamWriter sw = new StreamWriter(filePath1))
                     {
 
-                        var cams = this.GetCameraWindow(2);
+                        var cams = this.GetCameraWindow(allPTZCam.FirstOrDefault(c=>c.name == cameraPTZName).id);
                         // Write some text to the file
                         var presetPoistion = cams.PTZ.ONVIFPresets.ToList();
                         foreach (var preset in presetPoistion)
@@ -7230,6 +7243,28 @@ namespace iSpyApplication
             }  
             
             _timer.Start();
+        }
+        private List<objectsCamera> GetPTZCamera()
+        {
+            List<objectsCamera> ptzCam = new List<objectsCamera>();
+            foreach (var objCam in Cameras)
+            {
+                var cam = this.GetCameraWindow(objCam.id);
+                if (cam.PTZ.ONVIFPresets.Count() > 0)
+                {
+                    ptzCam.Add(objCam);
+                }
+                if (cam.PTZ.ONVIFPresets.Count() == 0)
+                {
+                    cam.PTZ.AddPreset("Test", "1");
+                    if (cam.PTZ.ONVIFPresets.Count() > 0)
+                    {
+                        ptzCam.Add(objCam);
+                        cam.PTZ.DeletePreset("1");
+                    }
+                }
+            }
+            return ptzCam;
         }
     }
 }
