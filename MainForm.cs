@@ -196,7 +196,6 @@ namespace iSpyApplication
         private MenuItem menuItem34;
         private Button btnCamPtz;
         private Button btn_door_view;
-        private ComboBox cmb_PTZCam;
         private ToolStripMenuItem openWebInterfaceToolStripMenuItem;
         
 
@@ -4960,7 +4959,6 @@ namespace iSpyApplication
             this.archiveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.cmb_PTZCam = new System.Windows.Forms.ComboBox();
             this.ctxtMainForm.SuspendLayout();
             this.toolStripMenu.SuspendLayout();
             this.ctxtMnu.SuspendLayout();
@@ -6519,7 +6517,6 @@ namespace iSpyApplication
             // 
             // splitContainer2.Panel1
             // 
-            this.splitContainer2.Panel1.Controls.Add(this.cmb_PTZCam);
             this.splitContainer2.Panel1.Controls.Add(this.btn_door_view);
             this.splitContainer2.Panel1.Controls.Add(this.btnCamPtz);
             this.splitContainer2.Panel1.Controls.Add(this.flowPreview);
@@ -6713,14 +6710,6 @@ namespace iSpyApplication
             this.deleteToolStripMenuItem.Size = new System.Drawing.Size(218, 24);
             this.deleteToolStripMenuItem.Text = "Delete";
             this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
-            // 
-            // cmb_PTZCam
-            // 
-            this.cmb_PTZCam.FormattingEnabled = true;
-            this.cmb_PTZCam.Location = new System.Drawing.Point(521, 5);
-            this.cmb_PTZCam.Name = "cmb_PTZCam";
-            this.cmb_PTZCam.Size = new System.Drawing.Size(121, 24);
-            this.cmb_PTZCam.TabIndex = 24;
             // 
             // MainForm
             // 

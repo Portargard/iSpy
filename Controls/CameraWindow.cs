@@ -1770,6 +1770,7 @@ namespace iSpyApplication.Controls
                                     if (Helper.CanAlert(Camobject.alerts.groupname, Camobject.alerts.resetinterval))
                                     {
                                         DoAlert("alert");
+                                        CreateFile(Camobject.name);
                                         MovementCount = 0;
                                     }
                                 }
@@ -1787,6 +1788,7 @@ namespace iSpyApplication.Controls
                                 if (Helper.CanAlert(Camobject.alerts.groupname, Camobject.alerts.resetinterval))
                                 {
                                     DoAlert("alert");
+                                    CreateFile(Camobject.name);
                                     MovementCount = 0;
                                 }
                             }
@@ -1797,6 +1799,7 @@ namespace iSpyApplication.Controls
                                 if (Helper.CanAlert(Camobject.alerts.groupname,Camobject.alerts.resetinterval))
                                 {
                                     DoAlert("alert");
+                                    CreateFile(Camobject.name);
                                 }
                             }
                             break;
@@ -5389,6 +5392,21 @@ namespace iSpyApplication.Controls
                 VolumeControl.Location = new Point(Location.X, Location.Y + Height);
                 VolumeControl.Width = Width;
                 VolumeControl.Height = 40;
+            }
+        }
+        public void CreateFile(string nameCamera)
+        {
+            string filePath = @"A:\Thu_tap\Test\alert.txt";
+            try
+            {
+                using (StreamWriter writer = new StreamWriter(filePath, false))
+                {
+                    writer.WriteLine($"{nameCamera}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException(ex);
             }
         }
     }
