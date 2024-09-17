@@ -2601,6 +2601,19 @@ namespace iSpyApplication
                 if (cw.VolumeControl != null && !cw.VolumeControl.IsEnabled)
                     cw.VolumeControl.Enable();
                 NeedsSync = true;
+                if (cw.PTZ.ONVIFPresets.Count() > 0)
+                {
+                    cw.Camobject.settings.ptzCheck = true;
+                }
+                if (cw.PTZ.ONVIFPresets.Count() == 0)
+                {
+                    cw.PTZ.AddPreset("Test", "1");
+                    if (cw.PTZ.ONVIFPresets.Count() > 0)
+                    {
+                        cw.Camobject.settings.ptzCheck = true;
+                        cw.PTZ.DeletePreset("1");
+                    }
+                }
                 SaveObjects();
             }
             else

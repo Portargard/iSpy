@@ -705,7 +705,21 @@ public partial class objectsCameraSettings {
     private bool useGPUField;
     
     private string encoderField;
-    
+    #region change
+    private bool ptzCheckField = false;
+    /// <remarks/>
+    public bool ptzCheck
+    {
+        get
+        {
+            return this.ptzCheckField;
+        }
+        set
+        {
+            this.ptzCheckField = value;
+        }
+    }
+    #endregion
     public objectsCameraSettings() {
         this.frameintervalField = 0;
         this.timestampfontsizeField = 10;

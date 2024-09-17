@@ -7235,25 +7235,7 @@ namespace iSpyApplication
         }
         private List<objectsCamera> GetPTZCamera()
         {
-            List<objectsCamera> ptzCam = new List<objectsCamera>();
-            foreach (var objCam in Cameras)
-            {
-                var cam = this.GetCameraWindow(objCam.id);
-                if (cam.PTZ.ONVIFPresets.Count() > 0)
-                {
-                    ptzCam.Add(objCam);
-                }
-                if (cam.PTZ.ONVIFPresets.Count() == 0)
-                {
-                    cam.PTZ.AddPreset("Test", "1");
-                    if (cam.PTZ.ONVIFPresets.Count() > 0)
-                    {
-                        ptzCam.Add(objCam);
-                        cam.PTZ.DeletePreset("1");
-                    }
-                }
-            }
-            return ptzCam;
+            return Cameras.Where(c => c.settings.ptzCheck == true).ToList();
         }
     }
 }
