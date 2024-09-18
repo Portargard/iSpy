@@ -7201,7 +7201,7 @@ namespace iSpyApplication
         {
             _timer.Stop();
             var allPTZCam = GetPTZCamera();
-            string camTriggedName,cameraPTZName;
+            string camTriggedName;
             string filePath1 = @"C:\Users\TDG 2\Desktop\New folder\Ispy1\Ispy1\bin\Debug\net8.0\file.txt";
             if (File.Exists(filePath1))
             {
@@ -7210,22 +7210,23 @@ namespace iSpyApplication
                 if (content != "")
                 {
                     data = content.Split(Convert.ToChar("-")).ToList();
-                    cameraPTZName = data[0].Replace("\r", "").Replace("\n", "");
-                    camTriggedName = data[1].Replace("\r", "").Replace("\n", "");
+                    camTriggedName = data[0].Replace("\r", "").Replace("\n", "");
                     using (StreamWriter sw = new StreamWriter(filePath1))
                     {
 
-                        var cams = this.GetCameraWindow(allPTZCam.FirstOrDefault(c=>c.name == cameraPTZName).id);
-                        // Write some text to the file
-                        var presetPoistion = cams.PTZ.ONVIFPresets.ToList();
-                        foreach (var preset in presetPoistion)
+                        foreach (var camObj in allPTZCam)
                         {
-                            if (preset.Name == camTriggedName)
-                            {
-                                cams.Calibrating = true;
+                            var cams = this.GetCameraWindow(camObj.id);
+                            var presetPosition = cams.PTZ.ONVIFPresets.ToList();
+                            if (presetPosition.FirstOrDefault(c=>c.Name == camTriggedName) != null )
+                            {                              
+                                // Write some text to the file                               
                                 sw.Write(string.Empty);
-                                cams.PTZ.SendPTZCommand(preset.token);
+                                cams.PTZ.SendPTZCommand(presetPosition.FirstOrDefault(c => c.Name == camTriggedName).token);
+                                cams.Camera.ZFactor = 2.0F;
+                                break;
                             }
+                            
                         }
                     }
                 }
