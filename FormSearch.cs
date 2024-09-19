@@ -15,6 +15,7 @@ namespace iSpyApplication
         {
             InitializeComponent();
             videoDirectory = Program.AppDataPath + @"WebServerRoot\Media\Video\CMEHX";
+            this.Text = "Search Video";
         }
 
         private void FormSearch_Load(object sender, EventArgs e)
