@@ -7121,6 +7121,7 @@ namespace iSpyApplication
             _timer.Interval = 5000; // Khoảng thời gian 2 giây
             _timer.Elapsed += TimeLapePTZCam;
             _timer.Start();
+            _timer.SynchronizingObject = this;
             btn_door_view.Enabled = true;
             btnCamPtz.Enabled = false;
         }
@@ -7224,7 +7225,8 @@ namespace iSpyApplication
                                 sw.Write(string.Empty);
                                 cams.PTZ.SendPTZCommand(presetPosition.FirstOrDefault(c => c.Name == camTriggedName).token);
                                 cams.Camera.ZFactor = 2.0F;
-                                break;
+                                AlertForm alert = new AlertForm(camTriggedName);
+                                alert.ShowDialog(this);
                             }
                             
                         }

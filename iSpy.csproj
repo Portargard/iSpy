@@ -400,6 +400,12 @@
     <Compile Include="AddRemoteCommand.Designer.cs">
       <DependentUpon>AddRemoteCommand.cs</DependentUpon>
     </Compile>
+    <Compile Include="AlertForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AlertForm.Designer.cs">
+      <DependentUpon>AlertForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="CameraDiscovery\CameraScanner.cs" />
     <Compile Include="CameraDiscovery\URLDiscovery.cs" />
     <Compile Include="Cloud\Box.cs" />
@@ -2436,6 +2442,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="AddRemoteCommand.resx">
       <DependentUpon>AddRemoteCommand.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AlertForm.resx">
+      <DependentUpon>AlertForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="CommandButtons.resx">
       <DependentUpon>CommandButtons.cs</DependentUpon>
