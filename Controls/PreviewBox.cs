@@ -36,6 +36,10 @@ namespace iSpyApplication.Controls
             MainClass = mainForm;
         }
 
+        public PreviewBox()
+        {
+        }
+
         public FilesFile FileData
         {
             get

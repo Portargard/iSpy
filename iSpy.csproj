@@ -487,6 +487,12 @@
     <Compile Include="FindObject.Designer.cs">
       <DependentUpon>FindObject.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormSearch.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormSearch.Designer.cs">
+      <DependentUpon>FormSearch.cs</DependentUpon>
+    </Compile>
     <Compile Include="Importer.cs">
       <SubType>Form</SubType>
     </Compile>
