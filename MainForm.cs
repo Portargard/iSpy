@@ -273,6 +273,7 @@ namespace iSpyApplication
         private MenuItem _helpItem;
         private ToolStripMenuItem _helpToolstripMenuItem;
         private Timer _houseKeepingTimer;
+        private static Timer _timer;
         private ToolStripMenuItem _iPCameraToolStripMenuItem;
         private static string _lastPath = Program.AppDataPath;
         private static string _currentFileName = "";
@@ -766,6 +767,7 @@ namespace iSpyApplication
                 Drawfont.Dispose();
                 _updateTimer?.Dispose();
                 _houseKeepingTimer?.Dispose();
+                _timer.Dispose();
                 //sometimes hangs??
                 //if (_fsw != null)
                 //    _fsw.Dispose();
@@ -1115,6 +1117,11 @@ namespace iSpyApplication
             _houseKeepingTimer.AutoReset = true;
             _houseKeepingTimer.SynchronizingObject = this;
             //GC.KeepAlive(_houseKeepingTimer);
+
+            _timer = new Timer();
+            _timer.Interval = 5000; // Khoảng thời gian 2 giây
+            _timer.Elapsed += TimeLapePTZCam;
+            _timer.SynchronizingObject = this;
 
             //load plugins
             LoadPlugins();
@@ -7114,14 +7121,9 @@ namespace iSpyApplication
             WindowState = FormWindowState.Minimized;
         }
         #region Check quay cam
-        private static Timer _timer;
         private void button1_Click(object sender, EventArgs e)
         {
-            _timer = new Timer();
-            _timer.Interval = 5000; // Khoảng thời gian 2 giây
-            _timer.Elapsed += TimeLapePTZCam;
             _timer.Start();
-            _timer.SynchronizingObject = this;
             btn_door_view.Enabled = true;
             btnCamPtz.Enabled = false;
         }
@@ -7131,7 +7133,6 @@ namespace iSpyApplication
             btn_door_view.Enabled = false;
             btnCamPtz.Enabled = true;
             _timer.Stop();
-            _timer.Dispose();
             //var cams = this.GetCameraWindow(2);
             //cams.Calibrating = true;
             //cams.PTZ.SendPTZCommand("1");
@@ -7198,6 +7199,9 @@ namespace iSpyApplication
             Conf.CommandButtonsHeight = cmdButtons.Height;
             Conf.CommandButtonsWidth = cmdButtons.Width;
         }
+        private AlertForm alert = new AlertForm();
+        private bool firstTrigged = true;
+
         private void TimeLapePTZCam(Object source, ElapsedEventArgs e)
         {
             _timer.Stop();
@@ -7212,28 +7216,50 @@ namespace iSpyApplication
                 {
                     data = content.Split(Convert.ToChar("-")).ToList();
                     camTriggedName = data[0].Replace("\r", "").Replace("\n", "");
-                    using (StreamWriter sw = new StreamWriter(filePath1))
+                    StreamWriter sw = new StreamWriter(filePath1);
+                    foreach (var camObj in allPTZCam)
                     {
-
-                        foreach (var camObj in allPTZCam)
-                        {
-                            var cams = this.GetCameraWindow(camObj.id);
-                            var presetPosition = cams.PTZ.ONVIFPresets.ToList();
-                            if (presetPosition.FirstOrDefault(c=>c.Name == camTriggedName) != null )
-                            {                              
-                                // Write some text to the file                               
-                                sw.Write(string.Empty);
-                                cams.PTZ.SendPTZCommand(presetPosition.FirstOrDefault(c => c.Name == camTriggedName).token);
-                                cams.Camera.ZFactor = 2.0F;
-                                AlertForm alert = new AlertForm(camTriggedName);
+                        var cams = this.GetCameraWindow(camObj.id);
+                        var presetPosition = cams.PTZ.ONVIFPresets.ToList();
+                        if (presetPosition.FirstOrDefault(c=>c.Name == camTriggedName) != null )
+                        {                              
+                            // Write some text to the file                               
+                            sw.Write(string.Empty);
+                            cams.PTZ.SendPTZCommand(presetPosition.FirstOrDefault(c => c.Name == camTriggedName).token);
+                            cams.Camera.ZFactor = 2.0F;
+                            if (firstTrigged)
+                            {
+                                alert._lstCamAlert.Add(new AlertInfor() { CameraAlert = camTriggedName,DateAlert = DateTime.Now});
+                                _timer.Start();
+                                sw.Dispose();
+                                firstTrigged = false;
                                 alert.ShowDialog(this);
+                                return;
                             }
-                            
+                            else
+                            {
+                                if (alert.IsDisposed == true)
+                                {
+                                    alert = new AlertForm();
+                                    alert._lstCamAlert.Add(new AlertInfor() { CameraAlert = camTriggedName, DateAlert = DateTime.Now });
+                                    _timer.Start();
+                                    sw.Dispose();
+                                    alert.ShowDialog(this);
+                                    return;
+                                }
+                                else
+                                {
+                                    alert._lstCamAlert.Add(new AlertInfor() { CameraAlert = camTriggedName, DateAlert = DateTime.Now });
+                                    sw.Dispose();
+                                    _timer.Start();
+                                    return;
+                                }
+                            }
                         }
+                            
                     }
                 }
             }  
-            
             _timer.Start();
         }
         private List<objectsCamera> GetPTZCamera()
