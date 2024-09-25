@@ -12,6 +12,7 @@ namespace iSpyApplication.Controls
         private static readonly List<LayoutItem> SavedLayout = new List<LayoutItem>();
         private ISpyControl _maximised = null;
         public static bool NeedsRedraw;
+        public bool isMaximise = false;
 
         public LayoutPanel()
         {
@@ -397,12 +398,15 @@ namespace iSpyApplication.Controls
                         if (cameraControl.VolumeControl != null)
                             cameraControl.Height -= 40;
                         _maximised = cameraControl;
+                        isMaximise = true;
                     }
                     else
                     {
                         if (minimiseIfMaximised)
                         {
                             Minimize(window, false);
+                            isMaximise= false;
+                            cameraControl.Camera.ZFactor = 0;
                             cameraControl.RestoreRect = Rectangle.Empty;
                         }
 

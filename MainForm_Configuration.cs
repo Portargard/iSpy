@@ -3029,8 +3029,30 @@ namespace iSpyApplication
             cameraControl.RemoteCommand += CameraControlRemoteCommand;
             cameraControl.Notification += ControlNotification;
             cameraControl.FileListUpdated += CameraControlFileListUpdated;
-        }
 
+            cameraControl.MouseClick += CameraControlMouseClick;
+        }
+        private float zoomFactor = 1.0f;
+        private void CameraControlMouseClick(object sender, MouseEventArgs e)
+        {
+
+            var cameraControl = (CameraWindow)sender;
+            if (_pnlCameras.isMaximise == true)
+            {
+
+                if (zoomFactor > 3.0f)
+                {
+                    zoomFactor = 0;
+                }
+                if (zoomFactor <= 3.0f)
+                {
+                    zoomFactor += 1.0f;
+                }
+                cameraControl.Camera.ZPoint = e.Location;
+                cameraControl.Camera.ZFactor = zoomFactor;
+            }
+            cameraControl.PTZ.CheckSendStop();
+        }
         void CameraControlFileListUpdated(object sender)
         {
             lock (ThreadLock)
