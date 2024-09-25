@@ -61,9 +61,14 @@ namespace iSpyApplication
 
         private void dgv_CamAlertInfor_DoubleClick(object sender, EventArgs e)
         {
+                  
+        }
+
+        private void btn_Delete_Click(object sender, EventArgs e)
+        {
             var selectedIndex = dgv_CamAlertInfor.SelectedRows[0];
             _lstCamAlert.RemoveAt(selectedIndex.Index);
-            dgv_CamAlertInfor.Rows.Remove(selectedIndex);           
+            dgv_CamAlertInfor.Rows.Remove(selectedIndex);
         }
     }
     public class AlertInfor

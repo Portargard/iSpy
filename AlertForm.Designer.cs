@@ -30,13 +30,14 @@
         {
             this.btn_close = new System.Windows.Forms.Button();
             this.dgv_CamAlertInfor = new System.Windows.Forms.DataGridView();
+            this.btn_Delete = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_CamAlertInfor)).BeginInit();
             this.SuspendLayout();
             // 
             // btn_close
             // 
             this.btn_close.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.btn_close.Location = new System.Drawing.Point(281, 381);
+            this.btn_close.Location = new System.Drawing.Point(166, 381);
             this.btn_close.Name = "btn_close";
             this.btn_close.Size = new System.Drawing.Size(130, 38);
             this.btn_close.TabIndex = 0;
@@ -60,11 +61,22 @@
             this.dgv_CamAlertInfor.TabIndex = 2;
             this.dgv_CamAlertInfor.DoubleClick += new System.EventHandler(this.dgv_CamAlertInfor_DoubleClick);
             // 
+            // btn_Delete
+            // 
+            this.btn_Delete.Location = new System.Drawing.Point(374, 382);
+            this.btn_Delete.Name = "btn_Delete";
+            this.btn_Delete.Size = new System.Drawing.Size(127, 37);
+            this.btn_Delete.TabIndex = 3;
+            this.btn_Delete.Text = "Delete";
+            this.btn_Delete.UseVisualStyleBackColor = true;
+            this.btn_Delete.Click += new System.EventHandler(this.btn_Delete_Click);
+            // 
             // AlertForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(675, 431);
+            this.Controls.Add(this.btn_Delete);
             this.Controls.Add(this.dgv_CamAlertInfor);
             this.Controls.Add(this.btn_close);
             this.MaximizeBox = false;
@@ -83,5 +95,6 @@
 
         private System.Windows.Forms.Button btn_close;
         private System.Windows.Forms.DataGridView dgv_CamAlertInfor;
+        private System.Windows.Forms.Button btn_Delete;
     }
 }
