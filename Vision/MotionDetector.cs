@@ -6,7 +6,10 @@
 // contacts@aforgenet.com
 //
 
+using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using AForge;
 using AForge.Imaging;
@@ -55,6 +58,7 @@ namespace iSpyApplication.Vision
 
         // motion detection zones
         private Rectangle[] _motionZones;
+        private List<System.Drawing.Point> _motionZonesPolygons;
         // image of motion zones
         private UnmanagedImage _zonesFrame;
         // size of video frame
@@ -121,17 +125,30 @@ namespace iSpyApplication.Vision
         /// located in the specified zones.</para>
         /// </remarks>
         /// 
+
+
         public Rectangle[] MotionZones
         {
             get { return _motionZones; }
             set
             {
                 _motionZones = value;
-                if (value!=null)
-                    CreateMotionZonesFrame( );
+                if (value != null)
+                    CreateMotionZonesFrame();
             }
         }
-
+        public List<System.Drawing.Point> MotionPoint
+        {
+            get { return _motionZonesPolygons; }
+            set 
+            {
+                _motionZonesPolygons = value;
+                if (value != null)
+                {
+                    CreateMotionPointZonesFrame( );
+                }
+            }
+        }
         /// <summary>
         /// Unmanaged image to use as zone template
         /// </summary>
@@ -298,11 +315,11 @@ namespace iSpyApplication.Vision
                 var motionLevel = _detector.MotionLevel;
 
                 // check if motion zones are specified
-                if (_detector.MotionFrame!=null && _motionZones != null)
+                if (_detector.MotionFrame!=null && _motionZonesPolygons != null)
                 {
                     if (_zonesFrame == null)
                     {
-                        CreateMotionZonesFrame();
+                        CreateMotionPointZonesFrame();
                     }
 
                     if (_zonesFrame != null && (_videoWidth == _zonesFrame.Width) && (_videoHeight == _zonesFrame.Height))
@@ -411,6 +428,68 @@ namespace iSpyApplication.Vision
                     }
                 }
             }
+        }
+        // Create motion zones' image using polygons
+        private unsafe void CreateMotionPointZonesFrame()
+        {
+            lock (_sync)
+            {
+                _area = 0;
+                // Free previous motion zones frame
+                if (_zonesFrame != null)
+                {
+                    _zonesFrame.Dispose();
+                    _zonesFrame = null;
+                }
+
+                // Create motion zones frame only if the algorithm has processed at least one frame
+                if (_motionZonesPolygons != null && _motionZonesPolygons.Count != 0 && _videoWidth != 0)
+                {
+                    _zonesFrame = UnmanagedImage.Create(_videoWidth, _videoHeight, PixelFormat.Format8bppIndexed);
+
+                    var imageRect = new Rectangle(0, 0, _videoWidth, _videoHeight);
+
+                    // Draw all motion zones on motion frame
+                        // Check if polygon is inside the image bounds
+                        var points =_motionZonesPolygons; // Giả sử có phương thức GetPoints() trả về danh sách các điểm
+                        foreach (var point in points)
+                        {
+                            if (imageRect.Contains(point))
+                            {
+                                _area++;
+                                // Thiết lập pixel tại điểm này
+                                SetPixel(_zonesFrame, point.X, point.Y, 255);
+                            }
+                        }
+                    
+                }
+            }
+        }
+
+        private void SetPixel(UnmanagedImage image, int x, int y, byte value)
+        {
+            unsafe
+            {
+                int stride = image.Stride;
+                byte* ptr = (byte*)image.ImageData.ToPointer() + y * stride + x;
+                *ptr = value;
+            }
+        }
+    }
+
+    // Định nghĩa lớp Polygon để đại diện cho đa giác
+    public class Polygon
+    {
+        private System.Drawing.Point[] _points;
+
+        public Polygon(System.Drawing.Point[] points)
+        {
+            _points = points;
+        }
+
+        public System.Drawing.Point[] GetPoints()
+        {
+            return _points;
         }
     }
 }

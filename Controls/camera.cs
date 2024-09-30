@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -41,6 +41,28 @@ namespace iSpyApplication.Controls
         public float MotionLevel;
 
         public Rectangle[] MotionZoneRectangles;
+        public List<Point> MotionZonePoint { get
+            {
+                string data = CW.Camobject.settings.MotionPoint;
+                List<Point> points = new List<Point>();
+
+                string[] pointStrings = data.Split(new[] { "}, {" }, StringSplitOptions.RemoveEmptyEntries);
+
+                foreach (var pointString in pointStrings)
+                {
+                    // Loại bỏ các ký tự không cần thiết
+                    string cleanString = pointString.Trim('{', '}', ' ');
+
+                    // Tách các phần X và Y
+                    string[] coordinates = cleanString.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                    int x = int.Parse(coordinates[0].Split('=')[1]);
+                    int y = int.Parse(coordinates[1].Split('=')[1]);
+
+                    // Thêm vào danh sách
+                    points.Add(new Point(x, y));
+                }
+                return points;
+            } }
         public IVideoSource VideoSource;
         public double Framerate;
         public double RealFramerate;
@@ -294,6 +316,7 @@ namespace iSpyApplication.Controls
         public Camera(IVideoSource source, MotionDetector detector)
         {
             VideoSource = source;
+            detector.MotionPoint = MotionZonePoint;
             _motionDetector = detector;
             VideoSource.NewFrame += VideoNewFrame;
         }
@@ -344,7 +367,11 @@ namespace iSpyApplication.Controls
             set
             {
                 _motionDetector = value;
-                if (value != null) _motionDetector.MotionZones = MotionZoneRectangles;
+                if (value != null)
+                {
+                    //_motionDetector.MotionZones = MotionZoneRectangles;
+                    _motionDetector.MotionPoint = MotionZonePoint;
+                }
             }
         }
 
@@ -365,7 +392,10 @@ namespace iSpyApplication.Controls
                 double hmulti = Convert.ToDouble(_height)/Convert.ToDouble(100);
                 MotionZoneRectangles = zones.Select(r => new Rectangle(Convert.ToInt32(r.left*wmulti), Convert.ToInt32(r.top*hmulti), Convert.ToInt32(r.width*wmulti), Convert.ToInt32(r.height*hmulti))).ToArray();
                 if (_motionDetector != null)
-                    _motionDetector.MotionZones = MotionZoneRectangles;
+                {
+                    //_motionDetector.MotionZones = MotionZoneRectangles;
+                    _motionDetector.MotionPoint = MotionZonePoint;
+                }    
                 return true;
             }
             return false;
@@ -374,8 +404,10 @@ namespace iSpyApplication.Controls
         public void ClearMotionZones()
         {
             MotionZoneRectangles = null;
-            if (_motionDetector != null && _motionDetector.MotionZones!=null)
-                _motionDetector.MotionZones = null;
+            //if (_motionDetector != null && _motionDetector.MotionZones!=null)
+            //    _motionDetector.MotionZones = null;
+            if (_motionDetector != null && _motionDetector.MotionPoint != null) 
+                _motionDetector.MotionPoint = null;
         }
 
         public event NewFrameEventHandler NewFrame;
@@ -862,6 +894,7 @@ namespace iSpyApplication.Controls
                     
                     try
                     {
+                        _motionDetector.MotionPoint = MotionZonePoint;
                         MotionLevel = _motionDetector.ProcessFrame(Filter != null ? Filter.Apply(lfu) : lfu);
                     }
                     catch(Exception ex)
