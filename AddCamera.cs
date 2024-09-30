@@ -303,6 +303,7 @@ namespace iSpyApplication
             }
             
             AreaControl.MotionZones = CameraControl.Camobject.detector.motionzones;
+            AreaControl.ConvertToPoint(CameraControl.Camobject.settings.MotionPoint);
 
             chkActive.Enabled = !string.IsNullOrEmpty(CameraControl.Camobject.settings.videosourcestring);
             
@@ -1021,6 +1022,7 @@ namespace iSpyApplication
 
             CameraControl.Camobject.detector.processframeinterval = (int)numProcessInterval.Value;
             CameraControl.Camobject.detector.motionzones = AreaControl.MotionZones;
+            CameraControl.Camobject.settings.MotionPoint = AreaControl.LstToString();
             CameraControl.Camobject.detector.type = (string) _detectortypes[ddlMotionDetector.SelectedIndex];
             CameraControl.Camobject.detector.postprocessor = (string) _processortypes[ddlProcessor.SelectedIndex];
             CameraControl.Camobject.name = txtCameraName.Text.Trim();
