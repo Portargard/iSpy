@@ -281,9 +281,9 @@ namespace iSpyApplication
             chkColourProcessing.Checked = CameraControl.Camobject.detector.colourprocessingenabled;
             numMaxFR.Value = CameraControl.Camobject.settings.maxframerate;
             numMaxFRRecording.Value = CameraControl.Camobject.settings.maxframeraterecord;
-            
-            txtDirectory.Text = CameraControl.Camobject.directory;
-            
+
+            txtDirectory.Text = "";
+
             rdoContinuous.Checked = CameraControl.Camobject.alerts.processmode == "continuous";
             rdoMotion.Checked = CameraControl.Camobject.alerts.processmode == "motion";
             rdoTrigger.Checked = CameraControl.Camobject.alerts.processmode == "trigger";
@@ -948,7 +948,7 @@ namespace iSpyApplication
             if (!CheckStep1())
                 return false;
             string err = "";
-                
+
             if (txtBuffer.Text.Length < 1 || txtInactiveRecord.Text.Length < 1 ||
                 txtCalibrationDelay.Text.Length < 1 || txtMaxRecordTime.Text.Length < 1)
             {
@@ -969,17 +969,17 @@ namespace iSpyApplication
             int motionTimeout = Convert.ToInt32(numMotionTimeout.Value);
             int timelapseframes = Convert.ToInt32(txtTimeLapseFrames.Value);
             int timelapsemovie = Convert.ToInt32(txtTimeLapse.Value);
-            
-            string localFilename=txtLocalFilename.Text.Trim();
-            if (localFilename.IndexOf("\\", StringComparison.Ordinal)!=-1)
+
+            string localFilename = txtLocalFilename.Text.Trim();
+            if (localFilename.IndexOf("\\", StringComparison.Ordinal) != -1)
             {
                 MessageBox.Show(LocRm.GetString("Validate_Camera_Local_Filename"));
                 return false;
             }
 
             string audioip = txtAudioOutIP.Text.Trim();
-                
-                
+
+
             if (!String.IsNullOrEmpty(audioip))
             {
                 IPAddress aip;
@@ -989,15 +989,15 @@ namespace iSpyApplication
                     {
                         IPHostEntry ipE = Dns.GetHostEntry(audioip);
                         IPAddress[] ipA = ipE.AddressList;
-                        if (ipA==null || ipA.Length == 0)
+                        if (ipA == null || ipA.Length == 0)
                         {
                             MessageBox.Show(LocRm.GetString("Validate_Camera_Talk_Field"));
                             return false;
                         }
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
-                        MessageBox.Show(LocRm.GetString("Validate_Camera_Talk_Field")+" ("+ex.Message+")");
+                        MessageBox.Show(LocRm.GetString("Validate_Camera_Talk_Field") + " (" + ex.Message + ")");
                         return false;
                     }
                 }
@@ -1023,8 +1023,8 @@ namespace iSpyApplication
             CameraControl.Camobject.detector.processframeinterval = (int)numProcessInterval.Value;
             CameraControl.Camobject.detector.motionzones = AreaControl.MotionZones;
             CameraControl.Camobject.settings.MotionPoint = AreaControl.LstToString();
-            CameraControl.Camobject.detector.type = (string) _detectortypes[ddlMotionDetector.SelectedIndex];
-            CameraControl.Camobject.detector.postprocessor = (string) _processortypes[ddlProcessor.SelectedIndex];
+            CameraControl.Camobject.detector.type = (string)_detectortypes[ddlMotionDetector.SelectedIndex];
+            CameraControl.Camobject.detector.postprocessor = (string)_processortypes[ddlProcessor.SelectedIndex];
             CameraControl.Camobject.name = txtCameraName.Text.Trim();
             //update to plugin if connected and supported
             if (CameraControl.Camera != null && CameraControl.Camera.Plugin != null)
@@ -1041,24 +1041,22 @@ namespace iSpyApplication
 
             CameraControl.Camobject.settings.ignoreaudio = chkIgnoreAudio.Checked;
             CameraControl.Camobject.alerts.active = chkMovement.Checked;
-                
-           
-                
+
+
+
             CameraControl.Camobject.recorder.quality = tbQuality.Value;
             CameraControl.Camobject.recorder.timelapsesave = (int)numTimelapseSave.Value;
             CameraControl.Camobject.recorder.timelapseframerate = (int)numFramerate.Value;
-                
+
             CameraControl.Camobject.ftp.quality = tbFTPQuality.Value;
-            CameraControl.Camobject.ftp.countermax = (int) numMaxCounter.Value;
-            CameraControl.Camobject.ftp.minimumdelay = ftpmindelay;                
+            CameraControl.Camobject.ftp.countermax = (int)numMaxCounter.Value;
+            CameraControl.Camobject.ftp.minimumdelay = ftpmindelay;
             SetStorageManagement();
 
             CameraControl.Camobject.recorder.minrecordtime = (int)numMinRecordTime.Value;
 
             CameraControl.Camobject.detector.autooff = (int)numAutoOff.Value;
-                                
-            if (txtDirectory.Text.Trim() == "")
-                txtDirectory.Text = MainForm.RandomString(5);
+            txtDirectory.Text = CameraControl.Camobject.name;
 
             var md = (ListItem)ddlMediaDirectory.SelectedItem;
             var newind = Convert.ToInt32(md.Value);
@@ -1067,20 +1065,25 @@ namespace iSpyApplication
             string olddir = Helper.GetMediaDirectory(2, CameraControl.Camobject.id) + "video\\" + CameraControl.Camobject.directory + "\\";
 
             bool needsFileRefresh = (CameraControl.Camobject.directory != txtDirectory.Text || CameraControl.Camobject.settings.directoryIndex != newind);
-                
+
             int tempidx = CameraControl.Camobject.settings.directoryIndex;
             CameraControl.Camobject.settings.directoryIndex = newind;
 
-                
+
             string newdir = Helper.GetMediaDirectory(2, CameraControl.Camobject.id) + "video\\" + txtDirectory.Text + "\\";
 
-            if (IsNew)
+
+            if (newdir != olddir)
             {
                 try
                 {
                     if (!Directory.Exists(newdir))
                     {
-                        Directory.CreateDirectory(newdir);
+                        if (Directory.Exists(olddir))
+                        {
+                            if (MessageBox.Show(this, "Copy Files?", LocRm.GetString("Confirm"), MessageBoxButtons.YesNo) == DialogResult.Yes)
+                                Helper.CopyFolder(olddir, newdir);
+                        }
                     }
                     else
                     {
@@ -1090,8 +1093,16 @@ namespace iSpyApplication
                                 LocRm.GetString("Confirm"), MessageBoxButtons.YesNoCancel))
                         {
                             case DialogResult.Yes:
-                                Directory.Delete(newdir, true);
-                                Directory.CreateDirectory(newdir);
+                                if (Directory.Exists(olddir))
+                                {
+                                    if (MessageBox.Show(this, "Copy Files?", LocRm.GetString("Confirm"), MessageBoxButtons.YesNo) == DialogResult.Yes)
+                                        Helper.CopyFolder(olddir, newdir);
+                                }
+                                else
+                                {
+                                    Directory.Delete(newdir, true);
+                                    Directory.CreateDirectory(newdir);
+                                }
                                 break;
                             case DialogResult.Cancel:
                                 CameraControl.Camobject.settings.directoryIndex = tempidx;
@@ -1108,71 +1119,12 @@ namespace iSpyApplication
                     return false;
                 }
             }
-            else
-            {
-                if (newdir != olddir)
-                {
-                    try
-                    {
-                        if (!Directory.Exists(newdir))
-                        {
-                            if (Directory.Exists(olddir))
-                            {
-                                if (MessageBox.Show(this,"Copy Files?",LocRm.GetString("Confirm"),MessageBoxButtons.YesNo)== DialogResult.Yes)
-                                    Helper.CopyFolder(olddir, newdir);
-                            }
-                            else
-                            {
-                                Directory.CreateDirectory(newdir);
-                            }
-                        }
-                        else
-                        {
-                            switch (
-                                MessageBox.Show(this,
-                                    LocRm.GetString("Validate_Directory_Exists"),
-                                    LocRm.GetString("Confirm"), MessageBoxButtons.YesNoCancel))
-                            {
-                                case DialogResult.Yes:
-                                    if (Directory.Exists(olddir))
-                                    {
-                                        if (MessageBox.Show(this, "Copy Files?", LocRm.GetString("Confirm"), MessageBoxButtons.YesNo) == DialogResult.Yes)
-                                            Helper.CopyFolder(olddir,newdir);
-                                    }
-                                    else
-                                    {
-                                        Directory.Delete(newdir, true);
-                                        Directory.CreateDirectory(newdir);
-                                    }
-                                    break;
-                                case DialogResult.Cancel:
-                                    CameraControl.Camobject.settings.directoryIndex = tempidx;
-                                    return false;
-                                case DialogResult.No:
-                                    break;
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show(this, LocRm.GetString("Validate_Directory_String") + Environment.NewLine + ex.Message);
-                        CameraControl.Camobject.settings.directoryIndex = tempidx;
-                        return false;
-                    }
-                }
-            }
 
-            if (!Directory.Exists(newdir + "thumbs\\"))
-            {
-                Directory.CreateDirectory(newdir + "thumbs\\");
-            }
-            if (!Directory.Exists(newdir + "grabs\\"))
-            {
-                Directory.CreateDirectory(newdir + "grabs\\");
-            }
-                
+
+
+
             CameraControl.Camobject.directory = txtDirectory.Text;
-                
+
 
             CameraControl.Camobject.schedule.active = chkSchedule.Checked;
             CameraControl.Camobject.settings.active = chkActive.Checked;
@@ -1271,18 +1223,18 @@ namespace iSpyApplication
                     vcd.GetProperty(VideoProcAmpProperty.WhiteBalance, out wb, out fwb);
                     vcd.GetProperty(VideoProcAmpProperty.BacklightCompensation, out bc, out fbc);
                     vcd.GetProperty(VideoProcAmpProperty.Gain, out g, out fg);
-                            
+
                     string cfg = "";
-                    cfg += "b=" + b + ",fb=" + (int) fb + ",";
-                    cfg += "c=" + c + ",fc=" + (int) fc + ",";
-                    cfg += "h=" + h + ",fh=" + (int) fh + ",";
-                    cfg += "s=" + s + ",fs=" + (int) fs + ",";
-                    cfg += "sh=" + sh + ",fsh=" + (int) fsh + ",";
-                    cfg += "gam=" + gam + ",fgam=" + (int) fgam + ",";
-                    cfg += "ce=" + ce + ",fce=" + (int) fce + ",";
-                    cfg += "wb=" + wb + ",fwb=" + (int) fwb + ",";
-                    cfg += "bc=" + bc + ",fbc=" + (int) fbc + ",";
-                    cfg += "g=" + g + ",fg=" + (int) fg;
+                    cfg += "b=" + b + ",fb=" + (int)fb + ",";
+                    cfg += "c=" + c + ",fc=" + (int)fc + ",";
+                    cfg += "h=" + h + ",fh=" + (int)fh + ",";
+                    cfg += "s=" + s + ",fs=" + (int)fs + ",";
+                    cfg += "sh=" + sh + ",fsh=" + (int)fsh + ",";
+                    cfg += "gam=" + gam + ",fgam=" + (int)fgam + ",";
+                    cfg += "ce=" + ce + ",fce=" + (int)fce + ",";
+                    cfg += "wb=" + wb + ",fwb=" + (int)fwb + ",";
+                    cfg += "bc=" + bc + ",fbc=" + (int)fbc + ",";
+                    cfg += "g=" + g + ",fg=" + (int)fg;
 
                     CameraControl.Camobject.settings.procAmpConfig = cfg;
                 }
