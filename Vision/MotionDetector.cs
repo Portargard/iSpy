@@ -448,48 +448,56 @@ namespace iSpyApplication.Vision
                     _zonesFrame = UnmanagedImage.Create(_videoWidth, _videoHeight, PixelFormat.Format8bppIndexed);
 
                     var imageRect = new Rectangle(0, 0, _videoWidth, _videoHeight);
+                    FillPolygonInUnmanagedImage(_zonesFrame, _motionZonesPolygons.ToArray());
 
-                    // Draw all motion zones on motion frame
-                        // Check if polygon is inside the image bounds
-                        var points =_motionZonesPolygons; // Giả sử có phương thức GetPoints() trả về danh sách các điểm
-                        foreach (var point in points)
-                        {
-                            if (imageRect.Contains(point))
-                            {
-                                _area++;
-                                // Thiết lập pixel tại điểm này
-                                SetPixel(_zonesFrame, point.X, point.Y, 255);
-                            }
-                        }
-                    
+
                 }
             }
         }
-
-        private void SetPixel(UnmanagedImage image, int x, int y, byte value)
+        void FillPolygonInUnmanagedImage(UnmanagedImage unmanagedImage, System.Drawing.Point[] polygon)
         {
+            int width = unmanagedImage.Width;
+            int height = unmanagedImage.Height;
+            int bytesPerPixel = System.Drawing.Image.GetPixelFormatSize(unmanagedImage.PixelFormat) / 8;
+
             unsafe
             {
-                int stride = image.Stride;
-                byte* ptr = (byte*)image.ImageData.ToPointer() + y * stride + x;
-                *ptr = value;
+                byte* ptr = (byte*)unmanagedImage.ImageData.ToPointer();
+
+                for (int y = 0; y < height; y++)
+                {
+                    for (int x = 0; x < width; x++)
+                    {
+                        if (IsPointInPolygon(polygon, x, y))
+                        {
+                            _area++;
+                            // Tính offset trong vùng nhớ
+                            byte* pixelData = ptr + (y * unmanagedImage.Stride) + x;
+
+                            // Set màu cho vùng bên trong đa giác
+                            // Ví dụ: đặt giá trị đỏ (giả sử ảnh là 24bpp RGB)
+                            SystemTools.SetUnmanagedMemory((IntPtr)pixelData, 255, 1);  // Byte đầu là màu đỏ
+                        }
+                    }
+                }
             }
         }
-    }
-
-    // Định nghĩa lớp Polygon để đại diện cho đa giác
-    public class Polygon
-    {
-        private System.Drawing.Point[] _points;
-
-        public Polygon(System.Drawing.Point[] points)
+        // Hàm kiểm tra điểm có nằm trong đa giác hay không
+        bool IsPointInPolygon(System.Drawing.Point[] polygon, int x, int y)
         {
-            _points = points;
-        }
+            int polygonLength = polygon.Length;
+            bool inside = false;
 
-        public System.Drawing.Point[] GetPoints()
-        {
-            return _points;
+            for (int i = 0, j = polygonLength - 1; i < polygonLength; j = i++)
+            {
+                if (((polygon[i].Y > y) != (polygon[j].Y > y)) &&
+                    (x < (polygon[j].X - polygon[i].X) * (y - polygon[i].Y) / (polygon[j].Y - polygon[i].Y) + polygon[i].X))
+                {
+                    inside = !inside;
+                }
+            }
+
+            return inside;
         }
     }
 }
