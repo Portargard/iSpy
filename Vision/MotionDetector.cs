@@ -6,6 +6,8 @@
 // contacts@aforgenet.com
 //
 
+using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using AForge;
@@ -55,6 +57,7 @@ namespace iSpyApplication.Vision
 
         // motion detection zones
         private Rectangle[] _motionZones;
+        private List<System.Drawing.Point> _motionZonesPolygons;
         // image of motion zones
         private UnmanagedImage _zonesFrame;
         // size of video frame
@@ -129,6 +132,18 @@ namespace iSpyApplication.Vision
                 _motionZones = value;
                 if (value!=null)
                     CreateMotionZonesFrame( );
+            }
+        }
+        public List<System.Drawing.Point> MotionPoint
+        {
+            get { return _motionZonesPolygons; }
+            set
+            {
+                _motionZonesPolygons = value;
+                if (value != null)
+                {
+                    CreateMotionPointZonesFrame();
+                }
             }
         }
 
@@ -298,11 +313,13 @@ namespace iSpyApplication.Vision
                 var motionLevel = _detector.MotionLevel;
 
                 // check if motion zones are specified
-                if (_detector.MotionFrame!=null && _motionZones != null)
+                if (_detector.MotionFrame!=null && (_motionZones != null || _motionZonesPolygons !=null))
                 {
                     if (_zonesFrame == null)
                     {
-                        CreateMotionZonesFrame();
+                        if(_motionZones != null) CreateMotionZonesFrame();
+                        else if (_motionZonesPolygons != null) CreateMotionPointZonesFrame();
+                        else CreateMotionZonesFrame();
                     }
 
                     if (_zonesFrame != null && (_videoWidth == _zonesFrame.Width) && (_videoHeight == _zonesFrame.Height))
@@ -411,6 +428,77 @@ namespace iSpyApplication.Vision
                     }
                 }
             }
+        }
+
+        // Create motion zones' image using polygons
+        private unsafe void CreateMotionPointZonesFrame()
+        {
+            lock (_sync)
+            {
+                _area = 0;
+                // Free previous motion zones frame
+                if (_zonesFrame != null)
+                {
+                    _zonesFrame.Dispose();
+                    _zonesFrame = null;
+                }
+
+                // Create motion zones frame only if the algorithm has processed at least one frame
+                if (_motionZonesPolygons != null && _motionZonesPolygons.Count != 0 && _videoWidth != 0)
+                {
+                    _zonesFrame = UnmanagedImage.Create(_videoWidth, _videoHeight, PixelFormat.Format8bppIndexed);
+
+                    var imageRect = new Rectangle(0, 0, _videoWidth, _videoHeight);
+                    FillPolygonInUnmanagedImage(_zonesFrame, _motionZonesPolygons.ToArray());
+
+
+                }
+            }
+        }
+        void FillPolygonInUnmanagedImage(UnmanagedImage unmanagedImage, System.Drawing.Point[] polygon)
+        {
+            int width = unmanagedImage.Width;
+            int height = unmanagedImage.Height;
+            int bytesPerPixel = System.Drawing.Image.GetPixelFormatSize(unmanagedImage.PixelFormat) / 8;
+
+            unsafe
+            {
+                byte* ptr = (byte*)unmanagedImage.ImageData.ToPointer();
+
+                for (int y = 0; y < height; y++)
+                {
+                    for (int x = 0; x < width; x++)
+                    {
+                        if (IsPointInPolygon(polygon, x, y))
+                        {
+                            _area++;
+                            // Tính offset trong vùng nhớ
+                            byte* pixelData = ptr + (y * unmanagedImage.Stride) + x;
+
+                            // Set màu cho vùng bên trong đa giác
+                            // Ví dụ: đặt giá trị đỏ (giả sử ảnh là 24bpp RGB)
+                            SystemTools.SetUnmanagedMemory((IntPtr)pixelData, 255, 1);  // Byte đầu là màu đỏ
+                        }
+                    }
+                }
+            }
+        }
+        // Hàm kiểm tra điểm có nằm trong đa giác hay không
+        bool IsPointInPolygon(System.Drawing.Point[] polygon, int x, int y)
+        {
+            int polygonLength = polygon.Length;
+            bool inside = false;
+
+            for (int i = 0, j = polygonLength - 1; i < polygonLength; j = i++)
+            {
+                if (((polygon[i].Y > y) != (polygon[j].Y > y)) &&
+                    (x < (polygon[j].X - polygon[i].X) * (y - polygon[i].Y) / (polygon[j].Y - polygon[i].Y) + polygon[i].X))
+                {
+                    inside = !inside;
+                }
+            }
+
+            return inside;
         }
     }
 }
