@@ -707,6 +707,7 @@ public partial class objectsCameraSettings {
     private string encoderField;
     #region change
     private bool ptzCheckField = false;
+    private string MotionPointField = "";
     /// <remarks/>
     public bool ptzCheck
     {
@@ -719,6 +720,19 @@ public partial class objectsCameraSettings {
             this.ptzCheckField = value;
         }
     }
+    /// <remarks/>
+    public string MotionPoint
+    {
+        get
+        {
+            return this.MotionPointField;
+        }
+        set
+        {
+            this.MotionPointField = value;
+        }
+    }
+
     #endregion
     public objectsCameraSettings() {
         this.frameintervalField = 0;

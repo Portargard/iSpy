@@ -2632,5 +2632,21 @@ namespace iSpyApplication
         {
             SendPtzCommand("2");
         }
+
+        private void lbl_DrawMode_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (AreaControl.ctrlPressed)
+            {
+                lbl_DrawMode.Text = "Rectangle";
+                AreaControl.ctrlPressed = false;
+                return;
+            }
+             if (AreaControl.ctrlPressed == false)
+            {
+                lbl_DrawMode.Text = "Poly Point";
+                AreaControl.ctrlPressed = true;
+                return;
+            }
+        }
     }
 }

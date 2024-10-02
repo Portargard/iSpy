@@ -347,6 +347,7 @@ namespace iSpyApplication
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
             this.flowLayoutPanel3 = new System.Windows.Forms.FlowLayoutPanel();
             this.linkLabel4 = new System.Windows.Forms.LinkLabel();
+            this.lbl_DrawMode = new System.Windows.Forms.LinkLabel();
             this.tcCamera.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.groupBox8.SuspendLayout();
@@ -1211,13 +1212,15 @@ namespace iSpyApplication
             this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 120F));
             this.tableLayoutPanel6.Controls.Add(this.AreaControl, 0, 0);
             this.tableLayoutPanel6.Controls.Add(this.llblClearAll, 1, 1);
-            this.tableLayoutPanel6.Controls.Add(this.label83, 0, 1);
+            this.tableLayoutPanel6.Controls.Add(this.label83, 0, 2);
+            this.tableLayoutPanel6.Controls.Add(this.lbl_DrawMode, 1, 2);
             this.tableLayoutPanel6.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel6.Location = new System.Drawing.Point(6, 21);
             this.tableLayoutPanel6.Name = "tableLayoutPanel6";
-            this.tableLayoutPanel6.RowCount = 2;
+            this.tableLayoutPanel6.RowCount = 3;
             this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel6.Size = new System.Drawing.Size(625, 382);
             this.tableLayoutPanel6.TabIndex = 48;
             // 
@@ -1254,7 +1257,7 @@ namespace iSpyApplication
             // label83
             // 
             this.label83.AutoSize = true;
-            this.label83.Location = new System.Drawing.Point(6, 319);
+            this.label83.Location = new System.Drawing.Point(6, 347);
             this.label83.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.label83.Name = "label83";
             this.label83.Padding = new System.Windows.Forms.Padding(6);
@@ -4414,6 +4417,19 @@ namespace iSpyApplication
             this.linkLabel4.Text = "Copy To...";
             this.linkLabel4.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel4_LinkClicked);
             // 
+            // lbl_DrawMode
+            // 
+            this.lbl_DrawMode.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lbl_DrawMode.AutoSize = true;
+            this.lbl_DrawMode.Location = new System.Drawing.Point(541, 347);
+            this.lbl_DrawMode.Name = "lbl_DrawMode";
+            this.lbl_DrawMode.Padding = new System.Windows.Forms.Padding(6);
+            this.lbl_DrawMode.Size = new System.Drawing.Size(81, 28);
+            this.lbl_DrawMode.TabIndex = 50;
+            this.lbl_DrawMode.TabStop = true;
+            this.lbl_DrawMode.Text = "Rectangle";
+            this.lbl_DrawMode.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lbl_DrawMode_LinkClicked);
+            // 
             // AddCamera
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -4911,5 +4927,6 @@ namespace iSpyApplication
         private System.Windows.Forms.Label label10;
 		private System.Windows.Forms.LinkLabel linkLabel_OpenVRKbrd;
         private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.LinkLabel lbl_DrawMode;
     }
 }
