@@ -3040,18 +3040,22 @@ namespace iSpyApplication
             if (_pnlCameras.isMaximise == true)
             {
 
-                if (zoomFactor > 3.0f)
+                if (zoomFactor >= 3.0f)
                 {
-                    zoomFactor = 0;
+                    zoomFactor = 1.0f;
                 }
-                if (zoomFactor <= 3.0f)
+                if (zoomFactor < 3.0f)
                 {
-                    zoomFactor += 1.0f;
+                    zoomFactor += 0.2f;
                 }
                 cameraControl.Camera.ZPoint = e.Location;
                 cameraControl.Camera.ZFactor = zoomFactor;
             }
             cameraControl.PTZ.CheckSendStop();
+            if (_pnlCameras.isMaximise == false)
+            {
+                zoomFactor = 1.0f;
+            }
         }
         void CameraControlFileListUpdated(object sender)
         {
