@@ -449,7 +449,7 @@ namespace iSpyApplication.Vision
                     _zonesFrame = UnmanagedImage.Create(_videoWidth, _videoHeight, PixelFormat.Format8bppIndexed);
 
                     var imageRect = new Rectangle(0, 0, _videoWidth, _videoHeight);
-                    FillPolygonInUnmanagedImage(_zonesFrame, _motionZonesPolygons.ToArray());
+                    FillPolygonInUnmanagedImage(_zonesFrame, ConvertPointForDraw(_motionZonesPolygons).ToArray());
 
 
                 }
@@ -499,6 +499,30 @@ namespace iSpyApplication.Vision
             }
 
             return inside;
+        }
+        // chuyển từ Point(% theo width và height) sang Point theo video frame size
+        private List<System.Drawing.Point> ConvertPointForDraw(List<System.Drawing.Point> points)
+        {
+            double wmulti = Convert.ToDouble(_videoWidth) / Convert.ToDouble(100);
+            double hmulti = Convert.ToDouble(_videoHeight) / Convert.ToDouble(100);
+            List<System.Drawing.Point> result = new List<System.Drawing.Point>();
+            foreach (var item in points)
+            {
+                result.Add(new System.Drawing.Point() { X = Convert.ToInt32(item.X * wmulti), Y = Convert.ToInt32(item.Y * hmulti) });
+            }
+            return result;
+        }
+        // chuyển từ sang Point theo video frame size  Point(% theo width và height)
+        private List<System.Drawing.Point> ConvertPointForSave(List<System.Drawing.Point> points)
+        {
+            double wmulti = Convert.ToDouble(_videoWidth) / Convert.ToDouble(100);
+            double hmulti = Convert.ToDouble(_videoHeight) / Convert.ToDouble(100);
+            List<System.Drawing.Point> result = new List<System.Drawing.Point>();
+            foreach (var item in points)
+            {
+                result.Add(new System.Drawing.Point() { X = Convert.ToInt32(item.X / wmulti), Y = Convert.ToInt32(item.Y / hmulti) });
+            }
+            return result;
         }
     }
 }

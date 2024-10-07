@@ -2231,6 +2231,10 @@ namespace iSpyApplication
             if (cw == null) return;           
             var ac = new AddCamera { CameraControl = cw, MainClass = this };
             ac.ShowDialog(owner ?? this);
+            if (ac.DialogResult == DialogResult.OK)
+            {
+                cw.Camobject.settings.MotionPoint = ac.CameraControl.Camobject.settings.MotionPoint;
+            }
             ac.Dispose();
             SetNewStartPosition();
         }

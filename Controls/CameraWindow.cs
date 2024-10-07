@@ -5435,7 +5435,9 @@ namespace iSpyApplication.Controls
         private List<Point> ConvertToPoint(string data,int frameWith,int frameHeight)
         {
             List<Point> points = new List<Point>();
-            
+            double wmulti = Convert.ToDouble(frameWith) / Convert.ToDouble(100);
+            double hmulti = Convert.ToDouble(frameHeight) / Convert.ToDouble(100);
+
             string[] pointStrings = data.Split(new[] { "}, {" }, StringSplitOptions.RemoveEmptyEntries);
 
             foreach (var pointString in pointStrings)
@@ -5445,11 +5447,11 @@ namespace iSpyApplication.Controls
 
                 // Tách các phần X và Y
                 string[] coordinates = cleanString.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                int x = int.Parse(coordinates[0].Split('=')[1]);
-                int y = int.Parse(coordinates[1].Split('=')[1]);
+                double x = double.Parse(coordinates[0].Split('=')[1]) * wmulti;
+                double y = double.Parse(coordinates[1].Split('=')[1]) * hmulti;
 
                 // Thêm vào danh sách
-                points.Add(new Point(x,y));
+                points.Add(new Point((int)x,(int)y));
             }
             return points;
         }

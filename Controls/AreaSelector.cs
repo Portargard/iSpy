@@ -405,11 +405,13 @@ namespace iSpyApplication.Controls
         {
             base.OnMouseDown(e);
             _isMouseDown = true;
-
+            double wmulti = Convert.ToDouble(Width) / Convert.ToDouble(100);
+            double hmulti = Convert.ToDouble(Height) / Convert.ToDouble(100);
+            var point = new Point(){ X = Convert.ToInt32(e.Location.X / wmulti), Y = Convert.ToInt32(e.Location.Y / hmulti) };
             // Kiểm tra xem người dùng có nhấp vào một đỉnh của đa giác hay không
             for (int i = 0; i < _polygonPoints.Count; i++)
             {
-                if (CalcDist(_polygonPoints[i], e.Location) < 10)
+                if (CalcDist(_polygonPoints[i], point) < 10)
                 {
                     _draggedPoint = _polygonPoints[i];
                     _draggedPointIndex = i;
@@ -417,7 +419,7 @@ namespace iSpyApplication.Controls
                 }
             }
             // Nếu không nhấp vào đỉnh nào, thêm điểm mới
-            _polygonPoints.Add(e.Location);
+            _polygonPoints.Add(point);
             Invalidate();
         }
         private void PolyPointMouseUp(MouseEventArgs e)
@@ -435,7 +437,10 @@ namespace iSpyApplication.Controls
             // Nếu đang kéo thả một đỉnh, cập nhật vị trí của nó
             if (_isMouseDown && _draggedPointIndex >= 0)
             {
-                _polygonPoints[_draggedPointIndex] = e.Location;
+                double wmulti = Convert.ToDouble(Width) / Convert.ToDouble(100);
+                double hmulti = Convert.ToDouble(Height) / Convert.ToDouble(100);
+                var point = new Point() { X = Convert.ToInt32(e.Location.X / wmulti), Y = Convert.ToInt32(e.Location.Y / hmulti) };
+                _polygonPoints[_draggedPointIndex] = point;
                 Invalidate();
             }
         }
@@ -450,15 +455,24 @@ namespace iSpyApplication.Controls
             if (bmp != null)
                 g.DrawImage(_lastFrame, 0, 0, Width, Height);
 
+            double wmulti = Convert.ToDouble(Width) / Convert.ToDouble(100);
+            double hmulti = Convert.ToDouble(Height) / Convert.ToDouble(100);
+
+            Point[] points = new Point[_polygonPoints.Count];
+            for (int i = 0; i < _polygonPoints.Count; i++)
+            {
+                points[i].X = Convert.ToInt32(_polygonPoints[i].X * wmulti);
+                points[i].Y = Convert.ToInt32(_polygonPoints[i].Y * hmulti);
+            }
             // Vẽ các đỉnh và đường của đa giác
             if (_polygonPoints.Count > 1)
             {
-                g.FillPolygon(brush, _polygonPoints.ToArray());
-                g.DrawPolygon(pen, _polygonPoints.ToArray());
+                g.FillPolygon(brush, points);
+                g.DrawPolygon(pen, points);
             }
 
             // Vẽ các đỉnh
-            foreach (var point in _polygonPoints)
+            foreach (var point in points)
             {
                 g.FillEllipse(Brushes.DeepSkyBlue, point.X - 5, point.Y - 5, 10, 10);
             }
