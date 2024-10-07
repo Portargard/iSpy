@@ -76,6 +76,7 @@ namespace iSpyApplication.Controls
         private long _lastMovementDetected = DateTime.MinValue.Ticks;
         private long _lastAlerted = DateTime.MinValue.Ticks;
 
+        private List<Point> _points;
         public DateTime LastMovementDetected
         {
             get { return new DateTime(_lastMovementDetected); }
@@ -2697,7 +2698,7 @@ namespace iSpyApplication.Controls
                                 }
                                 else
                                     AutoSize = false;
-
+                                DrawPolyGons(bmp);
                                 gCam.DrawImage(bmp, rc.X, rc.Y, rc.Width, rc.Height);
                                 bmp.Dispose();
                             }
@@ -5417,6 +5418,40 @@ namespace iSpyApplication.Controls
             {
                 Logger.LogException(ex);
             }
+        }
+        private void DrawPolyGons(Bitmap bmp)
+        {
+            _points = ConvertToPoint(Camobject.settings.MotionPoint,bmp.Width,bmp.Height);
+            if (_points!=null && _points.Count !=0)
+            {
+                using (Graphics g = Graphics.FromImage(bmp))
+                {
+                    // Vẽ viền đa giác bằng bút màu đen
+                    g.FillPolygon(new SolidBrush(Color.FromArgb(128, 255, 255, 255)), _points.ToArray());
+                    g.DrawPolygon(Pens.DarkGray, _points.ToArray());
+                }
+            }
+        }
+        private List<Point> ConvertToPoint(string data,int frameWith,int frameHeight)
+        {
+            List<Point> points = new List<Point>();
+            
+            string[] pointStrings = data.Split(new[] { "}, {" }, StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (var pointString in pointStrings)
+            {
+                // Loại bỏ các ký tự không cần thiết
+                string cleanString = pointString.Trim('{', '}', ' ');
+
+                // Tách các phần X và Y
+                string[] coordinates = cleanString.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                int x = int.Parse(coordinates[0].Split('=')[1]);
+                int y = int.Parse(coordinates[1].Split('=')[1]);
+
+                // Thêm vào danh sách
+                points.Add(new Point(x,y));
+            }
+            return points;
         }
     }
 
