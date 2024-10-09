@@ -12,6 +12,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using AForge;
 using AForge.Imaging;
+using AForge.Imaging.Filters;
 
 namespace iSpyApplication.Vision
 {
@@ -62,6 +63,8 @@ namespace iSpyApplication.Vision
         private UnmanagedImage _zonesFrame;
         // size of video frame
         private int _videoWidth, _videoHeight;
+
+        public List<System.Drawing.Point> pointInsidePolygons;
 
         // dummy object to lock for synchronization
         private readonly object _sync = new object( );
@@ -143,6 +146,11 @@ namespace iSpyApplication.Vision
                 if (value != null)
                 {
                     CreateMotionPointZonesFrame();
+                }
+                if (value == null)
+                {
+                    _area = 0;
+                    pointInsidePolygons = new List<System.Drawing.Point>();
                 }
             }
         }
@@ -318,7 +326,7 @@ namespace iSpyApplication.Vision
                     if (_zonesFrame == null)
                     {
                         if(_motionZones != null) CreateMotionZonesFrame();
-                        else if (_motionZonesPolygons != null) CreateMotionPointZonesFrame();
+                        else if (_motionZonesPolygons.Count != 0) CreateMotionPointZonesFrame();
                         else CreateMotionZonesFrame();
                     }
 
@@ -449,80 +457,31 @@ namespace iSpyApplication.Vision
                     _zonesFrame = UnmanagedImage.Create(_videoWidth, _videoHeight, PixelFormat.Format8bppIndexed);
 
                     var imageRect = new Rectangle(0, 0, _videoWidth, _videoHeight);
-                    FillPolygonInUnmanagedImage(_zonesFrame, ConvertPointForDraw(_motionZonesPolygons).ToArray());
-
-
-                }
-            }
-        }
-        void FillPolygonInUnmanagedImage(UnmanagedImage unmanagedImage, System.Drawing.Point[] polygon)
-        {
-            int width = unmanagedImage.Width;
-            int height = unmanagedImage.Height;
-            int bytesPerPixel = System.Drawing.Image.GetPixelFormatSize(unmanagedImage.PixelFormat) / 8;
-
-            unsafe
-            {
-                byte* ptr = (byte*)unmanagedImage.ImageData.ToPointer();
-
-                for (int y = 0; y < height; y++)
-                {
-                    for (int x = 0; x < width; x++)
+                    if (pointInsidePolygons.Count != 0)
                     {
-                        if (IsPointInPolygon(polygon, x, y))
+                        unsafe
                         {
-                            _area++;
-                            // Tính offset trong vùng nhớ
-                            byte* pixelData = ptr + (y * unmanagedImage.Stride) + x;
+                            byte* ptr = (byte*)_zonesFrame.ImageData.ToPointer();
 
-                            // Set màu cho vùng bên trong đa giác
-                            // Ví dụ: đặt giá trị đỏ (giả sử ảnh là 24bpp RGB)
-                            SystemTools.SetUnmanagedMemory((IntPtr)pixelData, 255, 1);  // Byte đầu là màu đỏ
+                            foreach (var item in pointInsidePolygons)
+                            {
+                                byte* pixelData = ptr + (item.Y * _zonesFrame.Stride) + item.X;
+                                SystemTools.SetUnmanagedMemory(pixelData, 255, 1);  // Byte đầu là màu đỏ
+
+                            }
+                            _area = pointInsidePolygons.Count;
                         }
                     }
+                    //FillPolygonInUnmanagedImage();
+
+
                 }
             }
         }
-        // Hàm kiểm tra điểm có nằm trong đa giác hay không
-        bool IsPointInPolygon(System.Drawing.Point[] polygon, int x, int y)
+        public void DataBinding(List<System.Drawing.Point> points)
         {
-            int polygonLength = polygon.Length;
-            bool inside = false;
-
-            for (int i = 0, j = polygonLength - 1; i < polygonLength; j = i++)
-            {
-                if (((polygon[i].Y > y) != (polygon[j].Y > y)) &&
-                    (x < (polygon[j].X - polygon[i].X) * (y - polygon[i].Y) / (polygon[j].Y - polygon[i].Y) + polygon[i].X))
-                {
-                    inside = !inside;
-                }
-            }
-
-            return inside;
-        }
-        // chuyển từ Point(% theo width và height) sang Point theo video frame size
-        private List<System.Drawing.Point> ConvertPointForDraw(List<System.Drawing.Point> points)
-        {
-            double wmulti = Convert.ToDouble(_videoWidth) / Convert.ToDouble(100);
-            double hmulti = Convert.ToDouble(_videoHeight) / Convert.ToDouble(100);
-            List<System.Drawing.Point> result = new List<System.Drawing.Point>();
-            foreach (var item in points)
-            {
-                result.Add(new System.Drawing.Point() { X = Convert.ToInt32(item.X * wmulti), Y = Convert.ToInt32(item.Y * hmulti) });
-            }
-            return result;
-        }
-        // chuyển từ sang Point theo video frame size  Point(% theo width và height)
-        private List<System.Drawing.Point> ConvertPointForSave(List<System.Drawing.Point> points)
-        {
-            double wmulti = Convert.ToDouble(_videoWidth) / Convert.ToDouble(100);
-            double hmulti = Convert.ToDouble(_videoHeight) / Convert.ToDouble(100);
-            List<System.Drawing.Point> result = new List<System.Drawing.Point>();
-            foreach (var item in points)
-            {
-                result.Add(new System.Drawing.Point() { X = Convert.ToInt32(item.X / wmulti), Y = Convert.ToInt32(item.Y / hmulti) });
-            }
-            return result;
+            _area = points.Count;
+            pointInsidePolygons = points;
         }
     }
 }

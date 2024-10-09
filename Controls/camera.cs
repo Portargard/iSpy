@@ -320,6 +320,7 @@ namespace iSpyApplication.Controls
         {
             VideoSource = source;
             _motionDetector = detector;
+            detector.DataBinding(CW._pointInsidePolygons);
             detector.MotionPoint = MotionZonePoint;
             VideoSource.NewFrame += VideoNewFrame;
         }
@@ -373,6 +374,7 @@ namespace iSpyApplication.Controls
                 if (value != null)
                 {
                     _motionDetector.MotionZones = MotionZoneRectangles;
+                    _motionDetector.DataBinding(CW._pointInsidePolygons);
                     _motionDetector.MotionPoint = MotionZonePoint;
                 }
             }
@@ -396,6 +398,7 @@ namespace iSpyApplication.Controls
                 MotionZoneRectangles = zones.Select(r => new Rectangle(Convert.ToInt32(r.left*wmulti), Convert.ToInt32(r.top*hmulti), Convert.ToInt32(r.width*wmulti), Convert.ToInt32(r.height*hmulti))).ToArray();
                 if (_motionDetector != null)
                     _motionDetector.MotionZones = MotionZoneRectangles;
+                _motionDetector.DataBinding(CW._pointInsidePolygons);
                 _motionDetector.MotionPoint = MotionZonePoint;
                 return true;
             }
@@ -895,6 +898,7 @@ namespace iSpyApplication.Controls
                     
                     try
                     {
+                        _motionDetector.DataBinding(CW._pointInsidePolygons);
                         _motionDetector.MotionPoint = MotionZonePoint;
                         MotionLevel = _motionDetector.ProcessFrame(Filter != null ? Filter.Apply(lfu) : lfu);
                     }

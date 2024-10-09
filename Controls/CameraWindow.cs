@@ -19,6 +19,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Serialization;
+using AForge.Imaging;
+using AForge;
 using FFmpeg.AutoGen;
 using iSpyApplication.Cloud;
 using iSpyApplication.Onvif;
@@ -34,8 +36,10 @@ using iSpyApplication.Vision;
 using iSpyPRO.DirectShow;
 using iSpyPRO.DirectShow.Internals;
 using xiApi.NET;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 using Encoder = System.Drawing.Imaging.Encoder;
 using Image = System.Drawing.Image;
+using System.Web;
 
 namespace iSpyApplication.Controls
 {
@@ -61,7 +65,7 @@ namespace iSpyApplication.Controls
         private double _timeLapseTotal;
         private double _timeLapseFrameCount;
         private double _secondCountNew;
-        private Point _mouseLoc;
+        private System.Drawing.Point _mouseLoc;
         public ConcurrentQueue<Helper.FrameAction> Buffer = new ConcurrentQueue<Helper.FrameAction>();
         private DateTime _errorTime = DateTime.MinValue;
         private DateTime _reconnectTarget = DateTime.MinValue;
@@ -76,7 +80,8 @@ namespace iSpyApplication.Controls
         private long _lastMovementDetected = DateTime.MinValue.Ticks;
         private long _lastAlerted = DateTime.MinValue.Ticks;
 
-        private List<Point> _points;
+        private List<System.Drawing.Point> _points;
+        public List<System.Drawing.Point> _pointInsidePolygons = new List<System.Drawing.Point>();
         public DateTime LastMovementDetected
         {
             get { return new DateTime(_lastMovementDetected); }
@@ -240,7 +245,7 @@ namespace iSpyApplication.Controls
         public bool IsEdit;
         public volatile bool MovementDetected;
         public bool PTZNavigate;
-        public Point PTZReference;
+        public System.Drawing.Point PTZReference;
         public bool NeedSizeUpdate;
         public bool ResizeParent;
         public bool ShuttingDown;
@@ -1011,7 +1016,7 @@ namespace iSpyApplication.Controls
 
         #region MouseEvents
 
-        private MousePos GetMousePos(Point location)
+        private MousePos GetMousePos(System.Drawing.Point location)
         {
             var result = MousePos.NoWhere;
             int rightSize = Padding.Right;
@@ -1135,7 +1140,7 @@ namespace iSpyApplication.Controls
                             _newSeek = 0;
                         }
                     }
-                    ((LayoutPanel)Parent).ISpyControlUp(new Point(Left + e.X, Top + e.Y));
+                    ((LayoutPanel)Parent).ISpyControlUp(new System.Drawing.Point(Left + e.X, Top + e.Y));
                     break;
                 case MouseButtons.Middle:
                     PTZNavigate = false;
@@ -1172,7 +1177,7 @@ namespace iSpyApplication.Controls
                             {
                                 case -999:
                                     var layoutPanel = (LayoutPanel)Parent;
-                                    layoutPanel?.ISpyControlDown(new Point(this.Left + e.X, this.Top + e.Y));
+                                    layoutPanel?.ISpyControlDown(new System.Drawing.Point(this.Left + e.X, this.Top + e.Y));
                                     break;
                                 case -1:
                                     if (Seekable && Camera?.VideoSource != null)
@@ -1259,7 +1264,7 @@ namespace iSpyApplication.Controls
                     }
                     break;
                 case MouseButtons.Middle:
-                    PTZReference = new Point(Width / 2, Height / 2);
+                    PTZReference = new System.Drawing.Point(Width / 2, Height / 2);
                     PTZNavigate = true;
                     break;
             }
@@ -1384,7 +1389,7 @@ namespace iSpyApplication.Controls
                         if (Camobject.schedule.active)
                             m = LocRm.GetString("Scheduled") + ", " + m;
 
-                        var toolTipLocation = new Point(5, Height - 24);
+                        var toolTipLocation = new System.Drawing.Point(5, Height - 24);
                         _toolTipCam.Show(m, this, toolTipLocation, 1000);
                     }
                     if (MainForm.Conf.ShowOverlayControls)
@@ -1400,7 +1405,7 @@ namespace iSpyApplication.Controls
                             return;
                         }
 
-                        var toolTipLocation = new Point(e.Location.X, rBp.Y + rBp.Height + 1);
+                        var toolTipLocation = new System.Drawing.Point(e.Location.X, rBp.Y + rBp.Height + 1);
                         int bpi = GetButtonIndexByLocation(e.Location);
                         if (_ttind != bpi)
                         {
@@ -2801,9 +2806,9 @@ namespace iSpyApplication.Controls
                     {
                         var borderPoints = new[]
                                            {
-                                               new Point(ClientRectangle.Width - 15, ClientRectangle.Height),
-                                               new Point(ClientRectangle.Width, ClientRectangle.Height - 15),
-                                               new Point(ClientRectangle.Width, ClientRectangle.Height)
+                                               new System.Drawing.Point(ClientRectangle.Width - 15, ClientRectangle.Height),
+                                               new System.Drawing.Point(ClientRectangle.Width, ClientRectangle.Height - 15),
+                                               new System.Drawing.Point(ClientRectangle.Width, ClientRectangle.Height)
                                            };
 
                         gCam.FillPolygon(grabBrush, borderPoints);
@@ -2829,17 +2834,17 @@ namespace iSpyApplication.Controls
 
             var grabPoints = new[]
                                  {
-                                     new Point(2, rc.Height - 22), new Point(w, rc.Height - 22),
-                                     new Point(w, rc.Height - 15), new Point(2, rc.Height - 15)
+                                     new System.Drawing.Point(2, rc.Height - 22), new System.Drawing.Point(w, rc.Height - 22),
+                                     new System.Drawing.Point(w, rc.Height - 15), new System.Drawing.Point(2, rc.Height - 15)
                                  };
 
             gCam.FillPolygon(sb, grabPoints);
 
-            gCam.DrawLine(pline, new Point(ax, rc.Height - 22), new Point(ax, rc.Height - 15));
-            gCam.DrawLine(pline, new Point(axmax, rc.Height - 22), new Point(axmax, rc.Height - 15));
+            gCam.DrawLine(pline, new System.Drawing.Point(ax, rc.Height - 22), new System.Drawing.Point(ax, rc.Height - 15));
+            gCam.DrawLine(pline, new System.Drawing.Point(axmax, rc.Height - 22), new System.Drawing.Point(axmax, rc.Height - 15));
         }
 
-        private int GetButtonIndexByLocation(Point xy)
+        private int GetButtonIndexByLocation(System.Drawing.Point xy)
         {
             var rBp = ButtonPanel;
             if (xy.X >= rBp.X && xy.Y > rBp.Y - 25 && xy.X <= rBp.X + rBp.Width && xy.Y <= rBp.Y + rBp.Height)
@@ -2970,9 +2975,9 @@ namespace iSpyApplication.Controls
                 int x = rPanel.X + Convert.ToInt32(xpos);
                 var navPoints = new[]
                 {
-                    new Point(x-4,rPanel.Y-8),
-                    new Point(x+4,rPanel.Y-2),
-                    new Point(x-4, rPanel.Y+4)
+                    new System.Drawing.Point(x-4,rPanel.Y-8),
+                    new System.Drawing.Point(x+4,rPanel.Y-2),
+                    new System.Drawing.Point(x-4, rPanel.Y+4)
                 };
 
                 gCam.FillPolygon(Brushes.White, navPoints);
@@ -2994,7 +2999,7 @@ namespace iSpyApplication.Controls
 
             var x = PTZReference.X - 30 * Math.Cos(angle);
             var y = PTZReference.Y - 30 * Math.Sin(angle);
-            gCam.DrawLine(MainForm.CameraNav, PTZReference, new Point((int)x, (int)y));
+            gCam.DrawLine(MainForm.CameraNav, PTZReference, new System.Drawing.Point((int)x, (int)y));
 
             if (Camobject.ptz != -1 && Math.Abs(Camera.ZFactor - 1) < double.Epsilon)
             {
@@ -5399,7 +5404,7 @@ namespace iSpyApplication.Controls
         {
             if (VolumeControl != null)
             {
-                VolumeControl.Location = new Point(Location.X, Location.Y + Height);
+                VolumeControl.Location = new System.Drawing.Point(Location.X, Location.Y + Height);
                 VolumeControl.Width = Width;
                 VolumeControl.Height = 40;
             }
@@ -5430,11 +5435,49 @@ namespace iSpyApplication.Controls
                     g.FillPolygon(new SolidBrush(Color.FromArgb(128, 255, 255, 255)), _points.ToArray());
                     g.DrawPolygon(Pens.DarkGray, _points.ToArray());
                 }
+                if (_pointInsidePolygons.Count == 0)
+                {
+                    GetMotionZone();
+                }
             }
         }
-        private List<Point> ConvertToPoint(string data,int frameWith,int frameHeight)
+        private void GetMotionZone()
         {
-            List<Point> points = new List<Point>();
+            int width = Camobject.settings.resizeWidth; // Chiều rộng
+            int height = Camobject.settings.resizeHeight; // Chiều cao
+            UnmanagedImage unmanagedImage = UnmanagedImage.Create(width, height, PixelFormat.Format8bppIndexed);
+            int bytesPerPixel = System.Drawing.Image.GetPixelFormatSize(unmanagedImage.PixelFormat) / 8;
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    if (IsPointInPolygon(_points.ToArray(), x, y))
+                    {
+                        _pointInsidePolygons.Add(new System.Drawing.Point() { X = x, Y = y});
+                    }
+                }
+            }          
+            Camera.MotionDetector.pointInsidePolygons = _pointInsidePolygons;
+        }
+        bool IsPointInPolygon(System.Drawing.Point[] polygon, int x, int y)
+        {
+            int polygonLength = polygon.Length;
+            bool inside = false;
+
+            for (int i = 0, j = polygonLength - 1; i < polygonLength; j = i++)
+            {
+                if (((polygon[i].Y > y) != (polygon[j].Y > y)) &&
+                    (x < (polygon[j].X - polygon[i].X) * (y - polygon[i].Y) / (polygon[j].Y - polygon[i].Y) + polygon[i].X))
+                {
+                    inside = !inside;
+                }
+            }
+
+            return inside;
+        }
+        private List<System.Drawing.Point> ConvertToPoint(string data,int frameWith,int frameHeight)
+        {
+            List<System.Drawing.Point> points = new List<System.Drawing.Point>();
             double wmulti = Convert.ToDouble(frameWith) / Convert.ToDouble(100);
             double hmulti = Convert.ToDouble(frameHeight) / Convert.ToDouble(100);
 
@@ -5451,7 +5494,7 @@ namespace iSpyApplication.Controls
                 double y = double.Parse(coordinates[1].Split('=')[1]) * hmulti;
 
                 // Thêm vào danh sách
-                points.Add(new Point((int)x,(int)y));
+                points.Add(new System.Drawing.Point((int)x,(int)y));
             }
             return points;
         }
