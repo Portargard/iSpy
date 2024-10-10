@@ -7207,7 +7207,7 @@ namespace iSpyApplication
             _timer.Stop();
             var allPTZCam = GetPTZCamera();
             string camTriggedName;
-            string filePath1 = @"C:\Users\TDG 2\Desktop\New folder\Ispy1\Ispy1\bin\Debug\net8.0\file.txt";
+            string filePath1 = Program.AppDataPath + @"file.txt";
             if (File.Exists(filePath1))
             {
                 List<string> data = new List<string>();

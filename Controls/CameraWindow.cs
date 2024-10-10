@@ -5411,7 +5411,7 @@ namespace iSpyApplication.Controls
         }
         public void CreateFile(string nameCamera)
         {
-            string filePath = @"C:\Users\TDG 2\Desktop\New folder\Ispy1\Ispy1\bin\Debug\net8.0\file.txt";
+            string filePath = Program.AppDataPath + @"file.txt";
             try
             {
                 using (StreamWriter writer = new StreamWriter(filePath, false))
