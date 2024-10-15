@@ -547,6 +547,18 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Compile>
+    <Compile Include="SetCamGroup.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SetCamGroup.Designer.cs">
+      <DependentUpon>SetCamGroup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SetTimeForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SetTimeForm.Designer.cs">
+      <DependentUpon>SetTimeForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Sources\Audio\AudioReader.cs" />
     <Compile Include="Sources\Audio\talk\TalkAmcrest.cs" />
     <Compile Include="Sources\Audio\talk\TalkDoorbird.cs" />
@@ -2656,6 +2668,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="PTZTool.resx">
       <DependentUpon>PTZTool.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SetCamGroup.resx">
+      <DependentUpon>SetCamGroup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SetTimeForm.resx">
+      <DependentUpon>SetTimeForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ShareCamera.resx">
       <DependentUpon>ShareCamera.cs</DependentUpon>
