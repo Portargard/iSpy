@@ -723,6 +723,7 @@ namespace iSpyApplication
                 _remotecommands = o.remotecommands.ToList();
                 _actions = o.actions.entries.ToList();
                 _schedule = o.schedule.entries.ToList();
+                _timerStopAlertDo.Interval = o.DelayTime.TimeSet;
             }
             catch (Exception ex)
             {
@@ -734,6 +735,7 @@ namespace iSpyApplication
                 _actions = new List<objectsActionsEntry>();
                 _schedule = new List<objectsScheduleEntry>();
                 _floorplans = new List<objectsFloorplan>();
+                _timerStopAlertDo.Interval = (new DelayPtzTime()).TimeSet;
             }
 
             Filter.CheckedCameraIDs = new List<int>();
@@ -3309,7 +3311,8 @@ namespace iSpyApplication
                 fileName = Program.AppDataPath + @"XML\objects_new.xml";
                 rename = true;
             }
-            var c = new objects { Version = Convert.ToInt32(Application.ProductVersion.Replace(".", "")), actions = new objectsActions {entries = _actions.ToArray()} };
+            var c = new objects { Version = Convert.ToInt32(Application.ProductVersion.Replace(".", "")), actions = new objectsActions {entries = _actions.ToArray()} ,DelayTime = new DelayPtzTime()};
+            c.DelayTime.TimeSet = _timerStopAlertDo.Interval;
             foreach (objectsCamera oc in Cameras)
             {
                 CameraWindow occ = GetCameraWindow(oc.id);

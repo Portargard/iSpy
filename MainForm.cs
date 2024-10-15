@@ -196,6 +196,8 @@ namespace iSpyApplication
         private MenuItem menuItem34;
         private Button btnCamPtz;
         private Button btn_door_view;
+        private Button btn_SetTime;
+        private Button btn_CamGroup;
         private ToolStripMenuItem openWebInterfaceToolStripMenuItem;
         
 
@@ -274,6 +276,7 @@ namespace iSpyApplication
         private ToolStripMenuItem _helpToolstripMenuItem;
         private Timer _houseKeepingTimer;
         private static Timer _timer;
+        public static  Timer _timerStopAlertDo;
         private ToolStripMenuItem _iPCameraToolStripMenuItem;
         private static string _lastPath = Program.AppDataPath;
         private static string _currentFileName = "";
@@ -768,6 +771,7 @@ namespace iSpyApplication
                 _updateTimer?.Dispose();
                 _houseKeepingTimer?.Dispose();
                 _timer.Dispose();
+                _timerStopAlertDo.Dispose();
                 //sometimes hangs??
                 //if (_fsw != null)
                 //    _fsw.Dispose();
@@ -1119,9 +1123,19 @@ namespace iSpyApplication
             //GC.KeepAlive(_houseKeepingTimer);
 
             _timer = new Timer();
-            _timer.Interval = 5000; // Khoảng thời gian 2 giây
+            _timer.Interval = 5000;
             _timer.Elapsed += TimeLapePTZCam;
             _timer.SynchronizingObject = this;
+
+            _timerStopAlertDo = new Timer();
+            //_timerStopAlertDo.Interval = 60000;
+            _timerStopAlertDo.Enabled = false;
+            _timerStopAlertDo.Elapsed += (sender, e) => {
+                // Tắt Timer sau khi chạy một lần
+                _timerStopAlertDo.Stop();
+            };
+            _timerStopAlertDo.AutoReset = false;
+            _timerStopAlertDo.SynchronizingObject = this;
 
             //load plugins
             LoadPlugins();
@@ -2105,6 +2119,7 @@ namespace iSpyApplication
                     var cameraWindow = c as CameraWindow;
                     if (cameraWindow != null)
                     {
+                        cameraWindow.trigged = _timerStopAlertDo.Enabled;
                         cameraWindow.Tick();
                         continue;
                     }
@@ -4948,6 +4963,7 @@ namespace iSpyApplication
             this.tsslPRO = new System.Windows.Forms.ToolStripStatusLabel();
             this._pnlContent = new System.Windows.Forms.Panel();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.btn_SetTime = new System.Windows.Forms.Button();
             this.btn_door_view = new System.Windows.Forms.Button();
             this.btnCamPtz = new System.Windows.Forms.Button();
             this.flowPreview = new iSpyApplication.Controls.MediaPanel();
@@ -4966,6 +4982,7 @@ namespace iSpyApplication
             this.archiveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.btn_CamGroup = new System.Windows.Forms.Button();
             this.ctxtMainForm.SuspendLayout();
             this.toolStripMenu.SuspendLayout();
             this.ctxtMnu.SuspendLayout();
@@ -5865,7 +5882,7 @@ namespace iSpyApplication
             this.toolStripMenu.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
             this.toolStripMenu.Location = new System.Drawing.Point(0, 0);
             this.toolStripMenu.Name = "toolStripMenu";
-            this.toolStripMenu.Size = new System.Drawing.Size(917, 39);
+            this.toolStripMenu.Size = new System.Drawing.Size(1025, 39);
             this.toolStripMenu.TabIndex = 0;
             this.toolStripMenu.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.ToolStrip1ItemClicked);
             // 
@@ -6456,7 +6473,7 @@ namespace iSpyApplication
             this.tsslPRO});
             this.statusStrip1.Location = new System.Drawing.Point(0, 533);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(917, 30);
+            this.statusStrip1.Size = new System.Drawing.Size(1025, 30);
             this.statusStrip1.TabIndex = 0;
             // 
             // _tsslStats
@@ -6512,7 +6529,7 @@ namespace iSpyApplication
             this._pnlContent.Location = new System.Drawing.Point(0, 0);
             this._pnlContent.Margin = new System.Windows.Forms.Padding(0);
             this._pnlContent.Name = "_pnlContent";
-            this._pnlContent.Size = new System.Drawing.Size(917, 139);
+            this._pnlContent.Size = new System.Drawing.Size(1025, 139);
             this._pnlContent.TabIndex = 20;
             // 
             // splitContainer2
@@ -6524,6 +6541,8 @@ namespace iSpyApplication
             // 
             // splitContainer2.Panel1
             // 
+            this.splitContainer2.Panel1.Controls.Add(this.btn_CamGroup);
+            this.splitContainer2.Panel1.Controls.Add(this.btn_SetTime);
             this.splitContainer2.Panel1.Controls.Add(this.btn_door_view);
             this.splitContainer2.Panel1.Controls.Add(this.btnCamPtz);
             this.splitContainer2.Panel1.Controls.Add(this.flowPreview);
@@ -6534,9 +6553,19 @@ namespace iSpyApplication
             // 
             this.splitContainer2.Panel2.Controls.Add(this.flCommands);
             this.splitContainer2.Panel2.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.splitContainer2.Size = new System.Drawing.Size(917, 139);
-            this.splitContainer2.SplitterDistance = 651;
+            this.splitContainer2.Size = new System.Drawing.Size(1025, 139);
+            this.splitContainer2.SplitterDistance = 727;
             this.splitContainer2.TabIndex = 88;
+            // 
+            // btn_SetTime
+            // 
+            this.btn_SetTime.Location = new System.Drawing.Point(521, 4);
+            this.btn_SetTime.Name = "btn_SetTime";
+            this.btn_SetTime.Size = new System.Drawing.Size(82, 24);
+            this.btn_SetTime.TabIndex = 24;
+            this.btn_SetTime.Text = "Set Time";
+            this.btn_SetTime.UseVisualStyleBackColor = true;
+            this.btn_SetTime.Click += new System.EventHandler(this.btn_SetTime_Click);
             // 
             // btn_door_view
             // 
@@ -6568,7 +6597,7 @@ namespace iSpyApplication
             this.flowPreview.Margin = new System.Windows.Forms.Padding(0);
             this.flowPreview.Name = "flowPreview";
             this.flowPreview.Padding = new System.Windows.Forms.Padding(2);
-            this.flowPreview.Size = new System.Drawing.Size(651, 100);
+            this.flowPreview.Size = new System.Drawing.Size(727, 100);
             this.flowPreview.TabIndex = 0;
             this.flowPreview.MouseDown += new System.Windows.Forms.MouseEventHandler(this.flowPreview_MouseDown);
             this.flowPreview.MouseEnter += new System.EventHandler(this.flowPreview_MouseEnter);
@@ -6582,7 +6611,7 @@ namespace iSpyApplication
             this.mediaPanelControl1.Margin = new System.Windows.Forms.Padding(0);
             this.mediaPanelControl1.Name = "mediaPanelControl1";
             this.mediaPanelControl1.Padding = new System.Windows.Forms.Padding(0, 0, 0, 2);
-            this.mediaPanelControl1.Size = new System.Drawing.Size(651, 39);
+            this.mediaPanelControl1.Size = new System.Drawing.Size(727, 39);
             this.mediaPanelControl1.TabIndex = 21;
             this.mediaPanelControl1.Load += new System.EventHandler(this.mediaPanelControl1_Load);
             // 
@@ -6594,7 +6623,7 @@ namespace iSpyApplication
             this.flCommands.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flCommands.Location = new System.Drawing.Point(0, 0);
             this.flCommands.Name = "flCommands";
-            this.flCommands.Size = new System.Drawing.Size(262, 139);
+            this.flCommands.Size = new System.Drawing.Size(294, 139);
             this.flCommands.TabIndex = 0;
             this.flCommands.MouseDown += new System.Windows.Forms.MouseEventHandler(this.flCommands_MouseDown);
             this.flCommands.MouseEnter += new System.EventHandler(this.flCommands_MouseEnter);
@@ -6625,7 +6654,7 @@ namespace iSpyApplication
             // 
             this.splitContainer1.Panel2.Controls.Add(this._pnlContent);
             this.splitContainer1.Panel2MinSize = 20;
-            this.splitContainer1.Size = new System.Drawing.Size(917, 494);
+            this.splitContainer1.Size = new System.Drawing.Size(1025, 494);
             this.splitContainer1.SplitterDistance = 351;
             this.splitContainer1.TabIndex = 21;
             // 
@@ -6640,7 +6669,7 @@ namespace iSpyApplication
             this._pnlCameras.Location = new System.Drawing.Point(0, 0);
             this._pnlCameras.Margin = new System.Windows.Forms.Padding(0);
             this._pnlCameras.Name = "_pnlCameras";
-            this._pnlCameras.Size = new System.Drawing.Size(917, 351);
+            this._pnlCameras.Size = new System.Drawing.Size(1025, 351);
             this._pnlCameras.TabIndex = 19;
             this._pnlCameras.Scroll += new System.Windows.Forms.ScrollEventHandler(this._pnlCameras_Scroll);
             this._pnlCameras.MouseDown += new System.Windows.Forms.MouseEventHandler(this._pnlCameras_MouseDown);
@@ -6718,10 +6747,20 @@ namespace iSpyApplication
             this.deleteToolStripMenuItem.Text = "Delete";
             this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
             // 
+            // btn_CamGroup
+            // 
+            this.btn_CamGroup.Location = new System.Drawing.Point(610, 4);
+            this.btn_CamGroup.Name = "btn_CamGroup";
+            this.btn_CamGroup.Size = new System.Drawing.Size(84, 23);
+            this.btn_CamGroup.TabIndex = 25;
+            this.btn_CamGroup.Text = "Cam Group";
+            this.btn_CamGroup.UseVisualStyleBackColor = true;
+            this.btn_CamGroup.Click += new System.EventHandler(this.btn_CamGroup_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-            this.ClientSize = new System.Drawing.Size(917, 563);
+            this.ClientSize = new System.Drawing.Size(1025, 563);
             this.ContextMenuStrip = this.ctxtTaskbar;
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.toolStripMenu);
@@ -7161,6 +7200,22 @@ namespace iSpyApplication
             ShowCommandButtonWindow();
         }
 
+        private void btn_SetTime_Click(object sender, EventArgs e)
+        {
+            SetTimeForm frm = new SetTimeForm();
+            frm.ShowDialog();
+            if (frm.DialogResult == DialogResult.OK)
+            {
+                _timerStopAlertDo.Interval = frm.DelayTime*1000;
+            }
+        }
+
+        private void btn_CamGroup_Click(object sender, EventArgs e)
+        {
+            SetCamGroup frm = new SetCamGroup(false);
+            frm.ShowDialog();
+        }
+
         internal void ShowCommandButtonWindow()
         {
             if (cmdButtons != null)
@@ -7205,6 +7260,11 @@ namespace iSpyApplication
         private void TimeLapePTZCam(Object source, ElapsedEventArgs e)
         {
             _timer.Stop();
+            if (_timerStopAlertDo.Enabled)
+            {
+                _timer.Start();
+                return;
+            }
             var allPTZCam = GetPTZCamera();
             string camTriggedName;
             string filePath1 = Program.AppDataPath + @"file.txt";
@@ -7225,6 +7285,7 @@ namespace iSpyApplication
                         {                              
                             // Write some text to the file                               
                             sw.Write(string.Empty);
+                            _timerStopAlertDo.Start();
                             cams.PTZ.SendPTZCommand(presetPosition.FirstOrDefault(c => c.Name == camTriggedName).token);
                             cams.Camera.ZFactor = 2.0F;
                             if (firstTrigged)

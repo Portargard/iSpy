@@ -82,6 +82,7 @@ namespace iSpyApplication.Controls
 
         private List<System.Drawing.Point> _points;
         public List<System.Drawing.Point> _pointInsidePolygons = new List<System.Drawing.Point>();
+        public bool trigged = false;
         public DateTime LastMovementDetected
         {
             get { return new DateTime(_lastMovementDetected); }
@@ -1809,7 +1810,10 @@ namespace iSpyApplication.Controls
                                     if (Helper.CanAlert(Camobject.alerts.groupname, Camobject.alerts.resetinterval))
                                     {
                                         DoAlert("alert");
-                                        CreateFile(Camobject.name);
+                                        if (!trigged)
+                                        {
+                                            CreateFile(Camobject.name);
+                                        }
                                         MovementCount = 0;
                                     }
                                 }
@@ -1827,7 +1831,10 @@ namespace iSpyApplication.Controls
                                 if (Helper.CanAlert(Camobject.alerts.groupname, Camobject.alerts.resetinterval))
                                 {
                                     DoAlert("alert");
-                                    CreateFile(Camobject.name);
+                                    if (!trigged)
+                                    {
+                                        CreateFile(Camobject.name);
+                                    }
                                     MovementCount = 0;
                                 }
                             }
@@ -1838,7 +1845,10 @@ namespace iSpyApplication.Controls
                                 if (Helper.CanAlert(Camobject.alerts.groupname, Camobject.alerts.resetinterval))
                                 {
                                     DoAlert("alert");
-                                    CreateFile(Camobject.name);
+                                    if (!trigged)
+                                        {
+                                            CreateFile(Camobject.name);
+                                        }
                                 }
                             }
                             break;

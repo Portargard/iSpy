@@ -37,6 +37,8 @@ public partial class objects {
     private objectsSchedule scheduleField;
     
     private objectsActions actionsField;
+
+    private DelayPtzTime DelayTimeField;
     
     public objects() {
         this.versionField = 0;
@@ -113,6 +115,18 @@ public partial class objects {
         }
         set {
             this.actionsField = value;
+        }
+    }
+
+    public DelayPtzTime DelayTime
+    {
+        get
+        {
+            return this.DelayTimeField;
+        }
+        set
+        {
+            this.DelayTimeField = value;
         }
     }
 }
@@ -6058,6 +6072,36 @@ public partial class objectsActionsEntry {
         }
         set {
             this.activeField = value;
+        }
+    }
+}
+
+/// <remarks/>
+[System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.8.3928.0")]
+[System.SerializableAttribute()]
+[System.Diagnostics.DebuggerStepThroughAttribute()]
+[System.ComponentModel.DesignerCategoryAttribute("code")]
+[System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
+public partial class DelayPtzTime
+{
+    private double timeSetField;
+    public DelayPtzTime()
+    {
+        timeSetField = 60000;
+    }
+    public double TimeSet
+    {
+        get
+        {
+            return this.timeSetField;
+        }
+        set
+        {
+            if(value <= 0)
+            {
+                this.timeSetField = 60000;
+            }
+            else {this.timeSetField = value; }
         }
     }
 }
