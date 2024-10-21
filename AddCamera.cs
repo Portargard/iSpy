@@ -291,7 +291,8 @@ namespace iSpyApplication
             tbSaveQuality.Value = CameraControl.Camobject.savelocal.quality;
            
             txtLocalFilename.Text = CameraControl.Camobject.savelocal.filename;
-
+            //
+          //  txt_ZoneGroup.Text = CameraControl.Camobject.ZoneSet.ToString();
             if (CameraControl.Camera==null)
             {
                 chkActive.Checked = false;
@@ -1018,7 +1019,7 @@ namespace iSpyApplication
             CameraControl.Camobject.savelocal.filename = txtLocalFilename.Text.Trim();
             CameraControl.Camobject.savelocal.enabled = chkLocalSaving.Checked;
             CameraControl.Camobject.savelocal.motiontimeout = motionTimeout;
-
+            CameraControl.Camobject.ZoneSet=txt_ZoneGroup.Text;
 
             CameraControl.Camobject.detector.processframeinterval = (int)numProcessInterval.Value;
             CameraControl.Camobject.detector.motionzones = AreaControl.MotionZones;

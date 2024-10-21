@@ -196,7 +196,7 @@ public partial class objectsCamera {
     private int surfaceIDField;
     
     private bool deletedField;
-    
+    private string ZoneGroup;
     public objectsCamera() {
         this.rotate90Field = false;
         this.rotateModeField = "";
@@ -316,7 +316,20 @@ public partial class objectsCamera {
             this.idField = value;
         }
     }
-    
+
+    [System.Xml.Serialization.XmlAttributeAttribute()]
+    public string ZoneSet
+    {
+        get
+        {
+            return this.ZoneGroup;
+        }
+        set
+        {
+            this.ZoneGroup = value;
+        }
+    }
+
     /// <remarks/>
     [System.Xml.Serialization.XmlAttributeAttribute()]
     public string name {
