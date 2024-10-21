@@ -50,6 +50,7 @@ namespace iSpyApplication
 
             AreaControl.BoundsChanged += AsBoundsChanged;
             AreaControl.Invalidate();
+            txt_ZoneGroup.Enabled = false;
         }
 
         private void AsBoundsChanged(object sender, EventArgs e)
@@ -245,6 +246,7 @@ namespace iSpyApplication
 
             numProcessInterval.Value = CameraControl.Camobject.detector.processframeinterval;
             txtCameraName.Text = CameraControl.Camobject.name;
+            txt_ZoneGroup.Text = CameraControl.Camobject.ZoneSet;
 
             ranger1.Maximum = 100;
             ranger1.Minimum = 0.001;
@@ -1019,7 +1021,7 @@ namespace iSpyApplication
             CameraControl.Camobject.savelocal.filename = txtLocalFilename.Text.Trim();
             CameraControl.Camobject.savelocal.enabled = chkLocalSaving.Checked;
             CameraControl.Camobject.savelocal.motiontimeout = motionTimeout;
-            CameraControl.Camobject.ZoneSet=txt_ZoneGroup.Text;
+            CameraControl.Camobject.ZoneSet = txt_ZoneGroup.Text;
 
             CameraControl.Camobject.detector.processframeinterval = (int)numProcessInterval.Value;
             CameraControl.Camobject.detector.motionzones = AreaControl.MotionZones;
@@ -2601,6 +2603,16 @@ namespace iSpyApplication
                 lbl_DrawMode.Text = "Poly Point";
                 AreaControl.ctrlPressed = true;
                 return;
+            }
+        }
+
+        private void btn_SetCamGroup_Click(object sender, EventArgs e)
+        {
+            SetCamGroup frm = new SetCamGroup(true);
+            frm.ShowDialog();
+            if (frm.DialogResult == DialogResult.OK)
+            {
+                txt_ZoneGroup.Text = frm.nodeData;
             }
         }
     }
