@@ -90,6 +90,7 @@ namespace iSpyApplication
             }
             MainForm.Conf.GridViews = l.ToArray();
             LoadGrids();
+
         }
 
         private void button3_Click(object sender, EventArgs e)

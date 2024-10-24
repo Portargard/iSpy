@@ -42,6 +42,7 @@ internal static class Program
             return _apppath;
         }   
     }
+
     public static string AppDataPath
     {
         get
