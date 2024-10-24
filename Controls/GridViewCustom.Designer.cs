@@ -48,14 +48,19 @@
             this.btnConfigure = new System.Windows.Forms.Button();
             this.chkShowOnLoad = new System.Windows.Forms.CheckBox();
             this.chkOverlays = new System.Windows.Forms.CheckBox();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numRows)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numCols)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numFramerate)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
+            this.splitContainer1.Panel1.SuspendLayout();
+            this.splitContainer1.SuspendLayout();
             this.SuspendLayout();
             // 
             // tableLayoutPanel1
             // 
+            this.tableLayoutPanel1.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.tableLayoutPanel1.ColumnCount = 3;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -95,8 +100,9 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(263, 321);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(358, 444);
             this.tableLayoutPanel1.TabIndex = 0;
+            this.tableLayoutPanel1.TabStop = true;
             // 
             // numRows
             // 
@@ -325,12 +331,30 @@
             this.chkOverlays.Text = "Overlays";
             this.chkOverlays.UseVisualStyleBackColor = true;
             // 
+            // splitContainer1
+            // 
+            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer1.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer1.Name = "splitContainer1";
+            // 
+            // splitContainer1.Panel1
+            // 
+            this.splitContainer1.Panel1.BackColor = System.Drawing.SystemColors.ActiveBorder;
+            this.splitContainer1.Panel1.Controls.Add(this.tableLayoutPanel1);
+            // 
+            // splitContainer1.Panel2
+            // 
+            this.splitContainer1.Panel2.BackColor = System.Drawing.SystemColors.ActiveBorder;
+            this.splitContainer1.Size = new System.Drawing.Size(1078, 444);
+            this.splitContainer1.SplitterDistance = 358;
+            this.splitContainer1.TabIndex = 1;
+            // 
             // GridViewCustom
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(263, 321);
-            this.Controls.Add(this.tableLayoutPanel1);
+            this.ClientSize = new System.Drawing.Size(1078, 444);
+            this.Controls.Add(this.splitContainer1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "GridViewCustom";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
@@ -341,6 +365,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.numRows)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numCols)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numFramerate)).EndInit();
+            this.splitContainer1.Panel1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
+            this.splitContainer1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -354,7 +381,6 @@
         private System.Windows.Forms.NumericUpDown numCols;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox txtName;
-        private System.Windows.Forms.Button button1;
         private System.Windows.Forms.CheckBox chkFullScreen;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.ComboBox cmbDisplay;
@@ -367,5 +393,7 @@
         private System.Windows.Forms.Button btnConfigure;
         private System.Windows.Forms.CheckBox chkShowOnLoad;
         private System.Windows.Forms.CheckBox chkOverlays;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.SplitContainer splitContainer1;
     }
 }
