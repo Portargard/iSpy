@@ -12,7 +12,6 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using AForge;
 using AForge.Imaging;
-using AForge.Imaging.Filters;
 
 namespace iSpyApplication.Vision
 {
@@ -53,7 +52,7 @@ namespace iSpyApplication.Vision
     ///
     public class MotionDetector
     {
-        private IMotionDetector   _detector;
+        private IMotionDetector _detector;
         private IMotionProcessing _processor;
 
         // motion detection zones
@@ -64,10 +63,8 @@ namespace iSpyApplication.Vision
         // size of video frame
         private int _videoWidth, _videoHeight;
 
-        public List<System.Drawing.Point> pointInsidePolygons;
-
         // dummy object to lock for synchronization
-        private readonly object _sync = new object( );
+        private readonly object _sync = new object();
 
         /// <summary>
         /// Motion detection algorithm to apply to each video frame.
@@ -84,7 +81,7 @@ namespace iSpyApplication.Vision
             get { return _detector; }
             set
             {
-                lock ( _sync )
+                lock (_sync)
                 {
                     _detector = value;
                 }
@@ -108,7 +105,7 @@ namespace iSpyApplication.Vision
             get { return _processor; }
             set
             {
-               // lock ( _sync )
+                // lock ( _sync )
                 {
                     _processor = value;
                 }
@@ -133,8 +130,8 @@ namespace iSpyApplication.Vision
             set
             {
                 _motionZones = value;
-                if (value!=null)
-                    CreateMotionZonesFrame( );
+                if (value != null)
+                    CreateMotionZonesFrame();
             }
         }
         public List<System.Drawing.Point> MotionPoint
@@ -146,11 +143,6 @@ namespace iSpyApplication.Vision
                 if (value != null)
                 {
                     CreateMotionPointZonesFrame();
-                }
-                if (value == null)
-                {
-                    _area = 0;
-                    pointInsidePolygons = new List<System.Drawing.Point>();
                 }
             }
         }
@@ -188,14 +180,14 @@ namespace iSpyApplication.Vision
                             //calculate area
 
                             int stride = _zonesFrame.Stride;
-                            var ptr = (byte*) _zonesFrame.ImageData.ToPointer();
+                            var ptr = (byte*)_zonesFrame.ImageData.ToPointer();
 
                             for (int x = 0; x < _zonesFrame.Width; x++)
                             {
                                 for (int y = 0; y < _zonesFrame.Height; y++)
                                 {
-                                    var b = ptr + y*stride + x;
-                                    if (*b==255)
+                                    var b = ptr + y * stride + x;
+                                    if (*b == 255)
                                     {
                                         _area++;
                                     }
@@ -204,7 +196,7 @@ namespace iSpyApplication.Vision
                         }
                     }
                 }
-                
+
             }
         }
 
@@ -214,7 +206,7 @@ namespace iSpyApplication.Vision
         /// 
         /// <param name="detector">Motion detection algorithm to apply to each video frame.</param>
         /// 
-        public MotionDetector( IMotionDetector detector ) : this( detector, null ) { }
+        public MotionDetector(IMotionDetector detector) : this(detector, null) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MotionDetector"/> class.
@@ -224,9 +216,9 @@ namespace iSpyApplication.Vision
         /// <param name="processor">Motion processing algorithm to apply to each video frame after
         /// motion detection is done.</param>
         /// 
-        public MotionDetector( IMotionDetector detector, IMotionProcessing processor )
+        public MotionDetector(IMotionDetector detector, IMotionProcessing processor)
         {
-            _detector  = detector;
+            _detector = detector;
             _processor = processor;
         }
 
@@ -242,21 +234,21 @@ namespace iSpyApplication.Vision
         /// <remarks><para>See <see cref="ProcessFrame(UnmanagedImage)"/> for additional details.</para>
         /// </remarks>
         /// 
-        public float ProcessFrame( Bitmap videoFrame )
+        public float ProcessFrame(Bitmap videoFrame)
         {
             float motionLevel;
 
             BitmapData videoData = videoFrame.LockBits(
-                new Rectangle( 0, 0, videoFrame.Width, videoFrame.Height ),
-                ImageLockMode.ReadWrite, videoFrame.PixelFormat );
+                new Rectangle(0, 0, videoFrame.Width, videoFrame.Height),
+                ImageLockMode.ReadWrite, videoFrame.PixelFormat);
 
             try
             {
-                motionLevel = ProcessFrame( new UnmanagedImage( videoData ) );
+                motionLevel = ProcessFrame(new UnmanagedImage(videoData));
             }
             finally
             {
-                videoFrame.UnlockBits( videoData );
+                videoFrame.UnlockBits(videoData);
             }
 
             return motionLevel;
@@ -274,9 +266,9 @@ namespace iSpyApplication.Vision
         /// <remarks><para>See <see cref="ProcessFrame(UnmanagedImage)"/> for additional details.</para>
         /// </remarks>
         ///
-        public float ProcessFrame( BitmapData videoFrame )
+        public float ProcessFrame(BitmapData videoFrame)
         {
-            return ProcessFrame( new UnmanagedImage( videoFrame ) );
+            return ProcessFrame(new UnmanagedImage(videoFrame));
         }
 
         /// <summary>
@@ -303,9 +295,9 @@ namespace iSpyApplication.Vision
         /// </note></para>
         /// </remarks>
         /// 
-        public float ProcessFrame( UnmanagedImage videoFrame )
+        public float ProcessFrame(UnmanagedImage videoFrame)
         {
-            lock ( _sync )
+            lock (_sync)
             {
                 if (_detector == null)
                     return 0;
@@ -314,19 +306,19 @@ namespace iSpyApplication.Vision
                 _videoHeight = videoFrame.Height;
 
                 if (_area == 0)
-                    _area = _videoWidth*_videoHeight;
+                    _area = _videoWidth * _videoHeight;
 
                 // call motion detection
                 _detector.ProcessFrame(videoFrame);
                 var motionLevel = _detector.MotionLevel;
 
                 // check if motion zones are specified
-                if (_detector.MotionFrame!=null && (_motionZones != null || _motionZonesPolygons !=null))
+                if (_detector.MotionFrame != null && (_motionZones != null || _motionZonesPolygons != null))
                 {
                     if (_zonesFrame == null)
                     {
-                        if(_motionZones != null) CreateMotionZonesFrame();
-                        else if (_motionZonesPolygons.Count != 0) CreateMotionPointZonesFrame();
+                        if (_motionZones != null) CreateMotionZonesFrame();
+                        else if (_motionZonesPolygons != null) CreateMotionPointZonesFrame();
                         else CreateMotionZonesFrame();
                     }
 
@@ -335,12 +327,12 @@ namespace iSpyApplication.Vision
                         unsafe
                         {
                             // pointers to background and current frames
-                            var zonesPtr = (byte*) _zonesFrame.ImageData.ToPointer();
-                            var motionPtr = (byte*) _detector.MotionFrame.ImageData.ToPointer();
+                            var zonesPtr = (byte*)_zonesFrame.ImageData.ToPointer();
+                            var motionPtr = (byte*)_detector.MotionFrame.ImageData.ToPointer();
 
                             motionLevel = 0;
 
-                            for (int i = 0, frameSize = _zonesFrame.Stride*_videoHeight;
+                            for (int i = 0, frameSize = _zonesFrame.Stride * _videoHeight;
                                 i < frameSize;
                                 i++, zonesPtr++, motionPtr++)
                             {
@@ -354,7 +346,7 @@ namespace iSpyApplication.Vision
 
                 // call motion post processing
                 ApplyOverlay(videoFrame);
-                return motionLevel;                
+                return motionLevel;
             }
         }
 
@@ -374,19 +366,19 @@ namespace iSpyApplication.Vision
         /// their <see cref="IMotionDetector.Reset"/> and <see cref="IMotionProcessing.Reset"/> methods.</para>
         /// </remarks>
         /// 
-        public void Reset( )
+        public void Reset()
         {
-           // lock ( _sync )
+            // lock ( _sync )
             {
-                _detector?.Reset( );
-                _processor?.Reset( );
+                _detector?.Reset();
+                _processor?.Reset();
 
-                _videoWidth  = 0;
+                _videoWidth = 0;
                 _videoHeight = 0;
 
-                if ( _zonesFrame != null )
+                if (_zonesFrame != null)
                 {
-                    _zonesFrame.Dispose( );
+                    _zonesFrame.Dispose();
                     _zonesFrame = null;
                 }
             }
@@ -395,44 +387,44 @@ namespace iSpyApplication.Vision
         private int _area;
 
         // Create motion zones' image
-        private unsafe void CreateMotionZonesFrame( )
+        private unsafe void CreateMotionZonesFrame()
         {
-            lock ( _sync )
+            lock (_sync)
             {
                 _area = 0;
                 // free previous motion zones frame
-                if ( _zonesFrame != null )
+                if (_zonesFrame != null)
                 {
-                    _zonesFrame.Dispose( );
+                    _zonesFrame.Dispose();
                     _zonesFrame = null;
                 }
 
                 // create motion zones frame only in the case if the algorithm has processed at least one frame
-                if ( ( _motionZones != null ) && ( _motionZones.Length != 0 ) && ( _videoWidth != 0 ) )
+                if ((_motionZones != null) && (_motionZones.Length != 0) && (_videoWidth != 0))
                 {
-                    _zonesFrame = UnmanagedImage.Create( _videoWidth, _videoHeight, PixelFormat.Format8bppIndexed );
+                    _zonesFrame = UnmanagedImage.Create(_videoWidth, _videoHeight, PixelFormat.Format8bppIndexed);
 
-                    var imageRect = new Rectangle( 0, 0, _videoWidth, _videoHeight );
-                    
+                    var imageRect = new Rectangle(0, 0, _videoWidth, _videoHeight);
+
                     // draw all motion zones on motion frame
-                    foreach ( Rectangle rect in _motionZones )
+                    foreach (Rectangle rect in _motionZones)
                     {
-                        rect.Intersect( imageRect );
+                        rect.Intersect(imageRect);
 
                         // rectangle's dimension
-                        int rectWidth  = rect.Width;
+                        int rectWidth = rect.Width;
                         int rectHeight = rect.Height;
 
                         // start pointer
                         int stride = _zonesFrame.Stride;
-                        byte* ptr = (byte*) _zonesFrame.ImageData.ToPointer( ) + rect.Y * stride + rect.X;
+                        byte* ptr = (byte*)_zonesFrame.ImageData.ToPointer() + rect.Y * stride + rect.X;
 
-                        for ( int y = 0; y < rectHeight; y++ )
+                        for (int y = 0; y < rectHeight; y++)
                         {
-                            SystemTools.SetUnmanagedMemory( ptr, 255, rectWidth );
+                            SystemTools.SetUnmanagedMemory(ptr, 255, rectWidth);
                             ptr += stride;
                         }
-                        _area += rect.Width*rect.Height;
+                        _area += rect.Width * rect.Height;
                     }
                 }
             }
@@ -457,31 +449,80 @@ namespace iSpyApplication.Vision
                     _zonesFrame = UnmanagedImage.Create(_videoWidth, _videoHeight, PixelFormat.Format8bppIndexed);
 
                     var imageRect = new Rectangle(0, 0, _videoWidth, _videoHeight);
-                    if (pointInsidePolygons.Count != 0)
-                    {
-                        unsafe
-                        {
-                            byte* ptr = (byte*)_zonesFrame.ImageData.ToPointer();
-
-                            foreach (var item in pointInsidePolygons)
-                            {
-                                byte* pixelData = ptr + (item.Y * _zonesFrame.Stride) + item.X;
-                                SystemTools.SetUnmanagedMemory(pixelData, 255, 1);  // Byte đầu là màu đỏ
-
-                            }
-                            _area = pointInsidePolygons.Count;
-                        }
-                    }
-                    //FillPolygonInUnmanagedImage();
+                    FillPolygonInUnmanagedImage(_zonesFrame, ConvertPointForDraw(_motionZonesPolygons).ToArray());
 
 
                 }
             }
         }
-        public void DataBinding(List<System.Drawing.Point> points)
+        void FillPolygonInUnmanagedImage(UnmanagedImage unmanagedImage, System.Drawing.Point[] polygon)
         {
-            _area = points.Count;
-            pointInsidePolygons = points;
+            int width = unmanagedImage.Width;
+            int height = unmanagedImage.Height;
+            int bytesPerPixel = System.Drawing.Image.GetPixelFormatSize(unmanagedImage.PixelFormat) / 8;
+
+            unsafe
+            {
+                byte* ptr = (byte*)unmanagedImage.ImageData.ToPointer();
+
+                for (int y = 0; y < height; y++)
+                {
+                    for (int x = 0; x < width; x++)
+                    {
+                        if (IsPointInPolygon(polygon, x, y))
+                        {
+                            _area++;
+                            // Tính offset trong vùng nhớ
+                            byte* pixelData = ptr + (y * unmanagedImage.Stride) + x;
+
+                            // Set màu cho vùng bên trong đa giác
+                            // Ví dụ: đặt giá trị đỏ (giả sử ảnh là 24bpp RGB)
+                            SystemTools.SetUnmanagedMemory((IntPtr)pixelData, 255, 1);  // Byte đầu là màu đỏ
+                        }
+                    }
+                }
+            }
+        }
+        // Hàm kiểm tra điểm có nằm trong đa giác hay không
+        bool IsPointInPolygon(System.Drawing.Point[] polygon, int x, int y)
+        {
+            int polygonLength = polygon.Length;
+            bool inside = false;
+
+            for (int i = 0, j = polygonLength - 1; i < polygonLength; j = i++)
+            {
+                if (((polygon[i].Y > y) != (polygon[j].Y > y)) &&
+                    (x < (polygon[j].X - polygon[i].X) * (y - polygon[i].Y) / (polygon[j].Y - polygon[i].Y) + polygon[i].X))
+                {
+                    inside = !inside;
+                }
+            }
+
+            return inside;
+        }
+        // chuyển từ Point(% theo width và height) sang Point theo video frame size
+        private List<System.Drawing.Point> ConvertPointForDraw(List<System.Drawing.Point> points)
+        {
+            double wmulti = Convert.ToDouble(_videoWidth) / Convert.ToDouble(100);
+            double hmulti = Convert.ToDouble(_videoHeight) / Convert.ToDouble(100);
+            List<System.Drawing.Point> result = new List<System.Drawing.Point>();
+            foreach (var item in points)
+            {
+                result.Add(new System.Drawing.Point() { X = Convert.ToInt32(item.X * wmulti), Y = Convert.ToInt32(item.Y * hmulti) });
+            }
+            return result;
+        }
+        // chuyển từ sang Point theo video frame size  Point(% theo width và height)
+        private List<System.Drawing.Point> ConvertPointForSave(List<System.Drawing.Point> points)
+        {
+            double wmulti = Convert.ToDouble(_videoWidth) / Convert.ToDouble(100);
+            double hmulti = Convert.ToDouble(_videoHeight) / Convert.ToDouble(100);
+            List<System.Drawing.Point> result = new List<System.Drawing.Point>();
+            foreach (var item in points)
+            {
+                result.Add(new System.Drawing.Point() { X = Convert.ToInt32(item.X / wmulti), Y = Convert.ToInt32(item.Y / hmulti) });
+            }
+            return result;
         }
     }
 }

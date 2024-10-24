@@ -5437,7 +5437,7 @@ namespace iSpyApplication.Controls
         private void DrawPolyGons(Bitmap bmp)
         {
             _points = ConvertToPoint(Camobject.settings.MotionPoint,bmp.Width,bmp.Height);
-            if (_points!=null && _points.Count !=0)
+            if (_points != null && _points.Count != 0)
             {
                 using (Graphics g = Graphics.FromImage(bmp))
                 {
@@ -5445,45 +5445,7 @@ namespace iSpyApplication.Controls
                     g.FillPolygon(new SolidBrush(Color.FromArgb(128, 255, 255, 255)), _points.ToArray());
                     g.DrawPolygon(Pens.DarkGray, _points.ToArray());
                 }
-                if (_pointInsidePolygons.Count == 0)
-                {
-                    GetMotionZone();
-                }
             }
-        }
-        private void GetMotionZone()
-        {
-            int width = Camobject.settings.resizeWidth; // Chiều rộng
-            int height = Camobject.settings.resizeHeight; // Chiều cao
-            UnmanagedImage unmanagedImage = UnmanagedImage.Create(width, height, PixelFormat.Format8bppIndexed);
-            int bytesPerPixel = System.Drawing.Image.GetPixelFormatSize(unmanagedImage.PixelFormat) / 8;
-            for (int y = 0; y < height; y++)
-            {
-                for (int x = 0; x < width; x++)
-                {
-                    if (IsPointInPolygon(_points.ToArray(), x, y))
-                    {
-                        _pointInsidePolygons.Add(new System.Drawing.Point() { X = x, Y = y});
-                    }
-                }
-            }          
-            Camera.MotionDetector.pointInsidePolygons = _pointInsidePolygons;
-        }
-        bool IsPointInPolygon(System.Drawing.Point[] polygon, int x, int y)
-        {
-            int polygonLength = polygon.Length;
-            bool inside = false;
-
-            for (int i = 0, j = polygonLength - 1; i < polygonLength; j = i++)
-            {
-                if (((polygon[i].Y > y) != (polygon[j].Y > y)) &&
-                    (x < (polygon[j].X - polygon[i].X) * (y - polygon[i].Y) / (polygon[j].Y - polygon[i].Y) + polygon[i].X))
-                {
-                    inside = !inside;
-                }
-            }
-
-            return inside;
         }
         private List<System.Drawing.Point> ConvertToPoint(string data,int frameWith,int frameHeight)
         {
