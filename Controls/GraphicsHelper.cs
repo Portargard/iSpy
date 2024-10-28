@@ -1,27 +1,35 @@
 ﻿using System;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using AForge.Imaging;
+using OpenCL.Net;
+using OpenClProgram = OpenCL.Net.Program;
 
 namespace iSpyApplication.Controls
 {
     public static class GraphicsHelper
     {
+        private static Context _context;
+        private static Device _device;
+        private static CommandQueue _commandQueue;
+
+        static GraphicsHelper()
+        {
+            // Khởi tạo OpenCL
+            ErrorCode error;
+            Platform platform = Cl.GetPlatformIDs(out error)[0];
+            _device = Cl.GetDeviceIDs(platform, DeviceType.Gpu, out error)[0];
+            _context = Cl.CreateContext(null, 1, new[] { _device }, null, IntPtr.Zero, out error);
+            _commandQueue = Cl.CreateCommandQueue(_context, _device, CommandQueueProperties.None, out error);
+        }
+
         public static bool UseManaged = true;
 
         public static void GdiDrawImage(this Graphics graphics, UnmanagedImage image, int x, int y, int w, int h)
         {
-            
-            IntPtr hdc = graphics.GetHdc();
-            IntPtr memdc = GdiInterop.CreateCompatibleDC(hdc);
-            IntPtr bmp = image.ImageData;
-            GdiInterop.SelectObject(memdc, bmp);
-            GdiInterop.SetStretchBltMode(hdc, 0x04);
-            GdiInterop.StretchBlt(hdc, x, y, w, h, memdc, 0, 0, image.Width, image.Height, GdiInterop.TernaryRasterOperations.SRCCOPY);
-            GdiInterop.DeleteObject(bmp);
-            GdiInterop.DeleteDC(memdc);
-            graphics.ReleaseHdc(hdc);
-
+            // Thực hiện chuyển đổi từ GDI sang OpenCL
+            ExecuteOpenCLDraw(graphics, image, new Rectangle(x, y, w, h));
         }
 
         public static void GdiDrawImage(this Graphics graphics, Bitmap image, Rectangle r)
@@ -32,136 +40,126 @@ namespace iSpyApplication.Controls
                 return;
             }
 
-            IntPtr hdc = graphics.GetHdc();
-            IntPtr memdc = GdiInterop.CreateCompatibleDC(hdc);
-            IntPtr bmp = image.GetHbitmap();
-            GdiInterop.SelectObject(memdc, bmp);
-            GdiInterop.SetStretchBltMode(hdc, 0x04);
-            GdiInterop.StretchBlt(hdc, r.Left, r.Top, r.Width, r.Height, memdc, 0, 0, image.Width, image.Height, GdiInterop.TernaryRasterOperations.SRCCOPY);
-            GdiInterop.DeleteObject(bmp);
-            GdiInterop.DeleteDC(memdc);
-            graphics.ReleaseHdc(hdc);
+            // Chuyển đổi từ GDI sang OpenCL để vẽ ảnh
+            ExecuteOpenCLDraw(graphics, image, r);
         }
 
         public static void GdiDrawImage(this Graphics graphics, UnmanagedImage image, Rectangle r)
         {
-
-            IntPtr hdc = graphics.GetHdc();
-            IntPtr memdc = GdiInterop.CreateCompatibleDC(hdc);
-            IntPtr bmp = image.ImageData;
-            GdiInterop.SelectObject(memdc, bmp);
-            GdiInterop.SetStretchBltMode(hdc, 0x04);
-            GdiInterop.StretchBlt(hdc, r.Left, r.Top, r.Width, r.Height, memdc, 0, 0, image.Width, image.Height, GdiInterop.TernaryRasterOperations.SRCCOPY);
-            GdiInterop.DeleteObject(bmp);
-            GdiInterop.DeleteDC(memdc);
-            graphics.ReleaseHdc(hdc);
+            ExecuteOpenCLDraw(graphics, image, r);
         }
-        //public static void GdiDrawImage(this Graphics graphics, Bitmap image, Rectangle rectangleDst, int nXSrc, int nYSrc, int nWidth, int nHeight)
-        //{
-        //    IntPtr hdc = graphics.GetHdc();
-        //    IntPtr memdc = GdiInterop.CreateCompatibleDC(hdc);
-        //    IntPtr bmp = image.GetHbitmap();
-        //    GdiInterop.SelectObject(memdc, bmp);
-        //    GdiInterop.SetStretchBltMode(hdc, 0x04);
-        //    GdiInterop.StretchBlt(hdc, rectangleDst.Left, rectangleDst.Top, rectangleDst.Width, rectangleDst.Height, memdc, nXSrc, nYSrc, nWidth, nHeight, GdiInterop.TernaryRasterOperations.SRCCOPY);
-        //    GdiInterop.DeleteObject(bmp);
-        //    GdiInterop.DeleteDC(memdc);
-        //    graphics.ReleaseHdc(hdc);
-        //}
-    }
 
-    public class GdiInterop
-    {
-        /// <summary>
-        /// Enumeration for the raster operations used in BitBlt.
-        /// In C++ these are actually #define. But to use these
-        /// constants with C#, a new enumeration _type is defined.
-        /// </summary>
-        public enum TernaryRasterOperations
+        private static void ExecuteOpenCLDraw(Graphics graphics, UnmanagedImage image, Rectangle r)
         {
-            SRCCOPY = 0x00CC0020, // dest = source
-            SRCPAINT = 0x00EE0086, // dest = source OR dest
-            SRCAND = 0x008800C6, // dest = source AND dest
-            SRCINVERT = 0x00660046, // dest = source XOR dest
-            SRCERASE = 0x00440328, // dest = source AND (NOT dest)
-            NOTSRCCOPY = 0x00330008, // dest = (NOT source)
-            NOTSRCERASE = 0x001100A6, // dest = (NOT src) AND (NOT dest)
-            MERGECOPY = 0x00C000CA, // dest = (source AND pattern)
-            MERGEPAINT = 0x00BB0226, // dest = (NOT source) OR dest
-            PATCOPY = 0x00F00021, // dest = pattern
-            PATPAINT = 0x00FB0A09, // dest = DPSnoo
-            PATINVERT = 0x005A0049, // dest = pattern XOR dest
-            DSTINVERT = 0x00550009, // dest = (NOT dest)
-            BLACKNESS = 0x00000042, // dest = BLACK
-            WHITENESS = 0x00FF0062, // dest = WHITE
-            CAPTUREBLT = 0x40000000 //only if WinVer >= 5.0.0 (see wingdi.h)
-        };
+            IntPtr imgPtr = image.ImageData;
+            int width = image.Width;
+            int height = image.Height;
 
-        /// <summary>
-        /// Enumeration to be used for those Win32 function 
-        /// that return BOOL
-        /// </summary>
-        public enum Bool
+            ErrorCode error;
+            IMem imgBuffer = Cl.CreateBuffer(_context, MemFlags.ReadOnly | MemFlags.CopyHostPtr, (IntPtr)(width * height * 4), imgPtr, out error);
+            IMem outputBuffer = Cl.CreateBuffer(_context, MemFlags.WriteOnly, (IntPtr)(r.Width * r.Height * 4), IntPtr.Zero, out error);
+
+            string kernelSource = @"
+            __kernel void StretchBltKernel(__global uchar* src, __global uchar* dst, int srcWidth, int srcHeight, int dstWidth, int dstHeight) {
+                int x = get_global_id(0);
+                int y = get_global_id(1);
+
+                int srcX = (x * srcWidth) / dstWidth;
+                int srcY = (y * srcHeight) / dstHeight;
+
+                int srcIndex = (srcY * srcWidth + srcX) * 4;
+                int dstIndex = (y * dstWidth + x) * 4;
+
+                dst[dstIndex] = src[srcIndex];
+                dst[dstIndex + 1] = src[srcIndex + 1];
+                dst[dstIndex + 2] = src[srcIndex + 2];
+                dst[dstIndex + 3] = src[srcIndex + 3];
+            }";
+
+            OpenClProgram program = Cl.CreateProgramWithSource(_context, 1, new[] { kernelSource }, null, out error);
+            Cl.BuildProgram(program, 1, new[] { _device }, string.Empty, null, IntPtr.Zero);
+
+            Kernel kernel = Cl.CreateKernel(program, "StretchBltKernel", out error);
+
+            Cl.SetKernelArg(kernel, 0, imgBuffer);
+            Cl.SetKernelArg(kernel, 1, outputBuffer);
+            Cl.SetKernelArg(kernel, 2, width);
+            Cl.SetKernelArg(kernel, 3, height);
+            Cl.SetKernelArg(kernel, 4, r.Width);
+            Cl.SetKernelArg(kernel, 5, r.Height);
+
+            IntPtr[] globalWorkSize = new IntPtr[] { (IntPtr)r.Width, (IntPtr)r.Height };
+            Cl.EnqueueNDRangeKernel(_commandQueue, kernel, 2, null, globalWorkSize, null, 0, null, out _);
+
+            Bitmap bitmap = new Bitmap(r.Width, r.Height, PixelFormat.Format32bppArgb);
+            BitmapData bitmapData = bitmap.LockBits(new Rectangle(0, 0, r.Width, r.Height), ImageLockMode.WriteOnly, bitmap.PixelFormat);
+            Cl.EnqueueReadBuffer(_commandQueue, outputBuffer, Bool.True, IntPtr.Zero, new IntPtr(r.Width * r.Height * 4), bitmapData.Scan0, 0, null, out _);
+            bitmap.UnlockBits(bitmapData);
+
+            graphics.DrawImage(bitmap, r);
+
+            Cl.ReleaseKernel(kernel);
+            Cl.ReleaseProgram(program);
+            Cl.ReleaseMemObject(imgBuffer);
+            Cl.ReleaseMemObject(outputBuffer);
+        }
+
+        private static void ExecuteOpenCLDraw(Graphics graphics, Bitmap image, Rectangle r)
         {
-            False = 0,
-            True
-        };
+            BitmapData imageData = image.LockBits(new Rectangle(0, 0, image.Width, image.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+            IntPtr imgPtr = imageData.Scan0;
+            int width = image.Width;
+            int height = image.Height;
 
-        /// <summary>
-        /// Sets the background color.
-        /// </summary>
-        /// <param name="hdc">The HDC.</param>
-        /// <param name="crColor">Color of the cr.</param>
-        /// <returns></returns>
-        [DllImport("gdi32.dll")]
-        public static extern int SetBkColor(IntPtr hdc, int crColor);
+            ErrorCode error;
+            IMem imgBuffer = Cl.CreateBuffer(_context, MemFlags.ReadOnly | MemFlags.CopyHostPtr, (IntPtr)(width * height * 4), imgPtr, out error);
+            IMem outputBuffer = Cl.CreateBuffer(_context, MemFlags.WriteOnly, (IntPtr)(r.Width * r.Height * 4), IntPtr.Zero, out error);
 
-        /// <summary>
-        /// CreateCompatibleDC
-        /// </summary>
-        [DllImport("gdi32.dll", ExactSpelling = true, SetLastError = true)]
-        public static extern IntPtr CreateCompatibleDC(IntPtr hDC);
+            string kernelSource = @"
+            __kernel void StretchBltKernel(__global uchar* src, __global uchar* dst, int srcWidth, int srcHeight, int dstWidth, int dstHeight) {
+                int x = get_global_id(0);
+                int y = get_global_id(1);
 
-        /// <summary>
-        /// DeleteDC
-        /// </summary>
-        [DllImport("gdi32.dll", ExactSpelling = true, SetLastError = true)]
-        public static extern Bool DeleteDC(IntPtr hdc);
+                int srcX = (x * srcWidth) / dstWidth;
+                int srcY = (y * srcHeight) / dstHeight;
 
-        /// <summary>
-        /// SelectObject
-        /// </summary>
-        [DllImport("gdi32.dll", ExactSpelling = true)]
-        public static extern IntPtr SelectObject(IntPtr hDC, IntPtr hObject);
+                int srcIndex = (srcY * srcWidth + srcX) * 4;
+                int dstIndex = (y * dstWidth + x) * 4;
 
-        /// <summary>
-        /// DeleteObject
-        /// </summary>
-        [DllImport("gdi32.dll", ExactSpelling = true, SetLastError = true)]
-        public static extern Bool DeleteObject(IntPtr hObject);
+                dst[dstIndex] = src[srcIndex];
+                dst[dstIndex + 1] = src[srcIndex + 1];
+                dst[dstIndex + 2] = src[srcIndex + 2];
+                dst[dstIndex + 3] = src[srcIndex + 3];
+            }";
 
-        /// <summary>
-        /// CreateCompatibleBitmap
-        /// </summary>
-        [DllImport("gdi32.dll", ExactSpelling = true, SetLastError = true)]
-        public static extern IntPtr CreateCompatibleBitmap(IntPtr hObject, int width, int height);
+            OpenClProgram program = Cl.CreateProgramWithSource(_context, 1, new[] { kernelSource }, null, out error);
+            Cl.BuildProgram(program, 1, new[] { _device }, string.Empty, null, IntPtr.Zero);
 
-        /// <summary>
-        /// BitBlt
-        /// </summary>
-        [DllImport("gdi32.dll", ExactSpelling = true, SetLastError = true)]
-        public static extern Bool BitBlt(IntPtr hObject, int nXDest, int nYDest, int nWidth, int nHeight, IntPtr hObjSource, int nXSrc, int nYSrc, TernaryRasterOperations dwRop);
+            Kernel kernel = Cl.CreateKernel(program, "StretchBltKernel", out error);
 
-        /// <summary>
-        /// StretchBlt
-        /// </summary>
-        [DllImport("gdi32.dll", ExactSpelling = true, SetLastError = true)]
-        public static extern Bool StretchBlt(IntPtr hObject, int nXOriginDest, int nYOriginDest, int nWidthDest, int nHeightDest, IntPtr hObjSource, int nXOriginSrc, int nYOriginSrc, int nWidthSrc, int nHeightSrc, TernaryRasterOperations dwRop);
+            Cl.SetKernelArg(kernel, 0, imgBuffer);
+            Cl.SetKernelArg(kernel, 1, outputBuffer);
+            Cl.SetKernelArg(kernel, 2, width);
+            Cl.SetKernelArg(kernel, 3, height);
+            Cl.SetKernelArg(kernel, 4, r.Width);
+            Cl.SetKernelArg(kernel, 5, r.Height);
 
-        /// <summary>
-        /// SetStretchBltMode
-        /// </summary>
-        [DllImport("gdi32.dll", ExactSpelling = true, SetLastError = true)]
-        public static extern Bool SetStretchBltMode(IntPtr hObject, int nStretchMode);
+            IntPtr[] globalWorkSize = new IntPtr[] { (IntPtr)r.Width, (IntPtr)r.Height };
+            Cl.EnqueueNDRangeKernel(_commandQueue, kernel, 2, null, globalWorkSize, null, 0, null, out _);
+
+            Bitmap outputBitmap = new Bitmap(r.Width, r.Height, PixelFormat.Format32bppArgb);
+            BitmapData outputData = outputBitmap.LockBits(new Rectangle(0, 0, r.Width, r.Height), ImageLockMode.WriteOnly, outputBitmap.PixelFormat);
+            Cl.EnqueueReadBuffer(_commandQueue, outputBuffer, Bool.True, IntPtr.Zero, new IntPtr(r.Width * r.Height * 4), outputData.Scan0, 0, null, out _);
+            outputBitmap.UnlockBits(outputData);
+
+            image.UnlockBits(imageData);
+
+            graphics.DrawImage(outputBitmap, r);
+
+            Cl.ReleaseKernel(kernel);
+            Cl.ReleaseProgram(program);
+            Cl.ReleaseMemObject(imgBuffer);
+            Cl.ReleaseMemObject(outputBuffer);
+        }
     }
 }

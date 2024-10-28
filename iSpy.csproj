@@ -290,6 +290,9 @@
     <Reference Include="NSpeex">
       <HintPath>DLLS\NSpeex.dll</HintPath>
     </Reference>
+    <Reference Include="OpenCL.Net, Version=2.2.9.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\OpenCL.Net.2.2.9.0\lib\net40\OpenCL.Net.dll</HintPath>
+    </Reference>
     <Reference Include="Renci.SshNet">
       <HintPath>DLLS\Renci.SshNet.dll</HintPath>
     </Reference>
@@ -3049,5 +3052,7 @@ if "$(ConfigurationName)" == "Release" (
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets'))" />
+    <Error Condition="!Exists('packages\OpenCL.Net.2.2.9.0\build\net40\OpenCL.Net.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\OpenCL.Net.2.2.9.0\build\net40\OpenCL.Net.targets'))" />
   </Target>
+  <Import Project="packages\OpenCL.Net.2.2.9.0\build\net40\OpenCL.Net.targets" Condition="Exists('packages\OpenCL.Net.2.2.9.0\build\net40\OpenCL.Net.targets')" />
 </Project>
