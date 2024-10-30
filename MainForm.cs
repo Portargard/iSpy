@@ -7398,7 +7398,6 @@ namespace iSpyApplication
                 string content = File.ReadAllText(filePath1);
                 if (content != "")
                 {
-                    data = content.Split(Convert.ToChar("-")).ToList();
                     camTriggedName = data[0].Replace("\r", "").Replace("\n", "");
                     StreamWriter sw = new StreamWriter(filePath1);
                     foreach (var camObj in allPTZCam)
