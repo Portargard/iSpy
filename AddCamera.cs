@@ -202,7 +202,11 @@ namespace iSpyApplication
             if (CameraControl.VolumeControl != null)
                 CameraControl.VolumeControl.IsEdit = true;
             ddlTimestamp.Text = CameraControl.Camobject.settings.timestampformatter;
-
+            if (CameraControl.Camobject.settings.useGPU)
+            {
+                cbx_useGPU.Checked = true;
+            }
+            else cbx_useGPU.Checked = false;
             //chkUploadYouTube.Checked = CameraControl.Camobject.settings.youtube.autoupload;
             chkPublic.Checked = CameraControl.Camobject.settings.youtube.@public;
             txtTags.Text = CameraControl.Camobject.settings.youtube.tags;
@@ -1029,6 +1033,7 @@ namespace iSpyApplication
             CameraControl.Camobject.detector.type = (string)_detectortypes[ddlMotionDetector.SelectedIndex];
             CameraControl.Camobject.detector.postprocessor = (string)_processortypes[ddlProcessor.SelectedIndex];
             CameraControl.Camobject.name = txtCameraName.Text.Trim();
+            CameraControl.Camobject.settings.useGPU = cbx_useGPU.Checked;
             //update to plugin if connected and supported
             if (CameraControl.Camera != null && CameraControl.Camera.Plugin != null)
             {
