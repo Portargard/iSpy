@@ -48,6 +48,7 @@
             this.Controls.Add(this.pictureBox1);
             this.Name = "HumanDetect";
             this.Text = "HumanDetect";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.HumanDetect_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
 

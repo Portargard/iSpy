@@ -169,5 +169,11 @@ namespace iSpyApplication
             CvInvoke.PutText(image, label, new Point(x, y - 5), FontFace.HersheySimplex, fontSize, new MCvScalar(255, 0, 0), 2); // Màu đỏ, độ dày 2
 
         }
+
+        private void HumanDetect_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            _frame.Dispose();
+            _timer.Dispose();
+        }
     }
 }
