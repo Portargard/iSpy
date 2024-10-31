@@ -4682,6 +4682,8 @@ namespace iSpyApplication
         {
             var mi = (ToolStripItem)sender;
             ShowGridView(mi.Text);
+            _pnlCameras.SendToBack();
+            splitContainer4.BringToFront();
         }
 
         void tsi_MaximiseClick(object sender, EventArgs e)
