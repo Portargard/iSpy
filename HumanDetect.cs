@@ -57,7 +57,7 @@ namespace iSpyApplication
             _frame = img.Mat;
             if (!_frame.IsEmpty)
             {
-                var blob = DnnInvoke.BlobFromImage(_frame, 0.00392, new Size(320, 320), new MCvScalar(0, 0, 0), true, false);
+                var blob = DnnInvoke.BlobFromImage(_frame, 0.00392, new Size(640, 640), new MCvScalar(0, 0, 0), true, false);
                 _net.SetInput(blob);
 
                 var outputLayerNames = _net.UnconnectedOutLayersNames;
