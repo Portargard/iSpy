@@ -211,11 +211,11 @@
       <HintPath>packages\BouncyCastle.1.8.5\lib\BouncyCastle.Crypto.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Emgu.CV.Bitmap, Version=4.4.0.4099, Culture=neutral, PublicKeyToken=7281126722ab4438, processorArchitecture=MSIL">
-      <HintPath>packages\Emgu.CV.Bitmap.4.4.0.4099\lib\netstandard2.0\Emgu.CV.Bitmap.dll</HintPath>
+    <Reference Include="Emgu.CV.Bitmap, Version=4.4.0.4061, Culture=neutral, PublicKeyToken=7281126722ab4438, processorArchitecture=MSIL">
+      <HintPath>packages\Emgu.CV.Bitmap.4.4.0.4061\lib\netstandard2.0\Emgu.CV.Bitmap.dll</HintPath>
     </Reference>
-    <Reference Include="Emgu.CV.Platform.NetStandard, Version=4.4.0.4099, Culture=neutral, PublicKeyToken=7281126722ab4438, processorArchitecture=MSIL">
-      <HintPath>packages\Emgu.CV.4.4.0.4099\lib\netstandard2.0\Emgu.CV.Platform.NetStandard.dll</HintPath>
+    <Reference Include="Emgu.CV.Platform.NetStandard, Version=4.4.0.4061, Culture=neutral, PublicKeyToken=7281126722ab4438, processorArchitecture=MSIL">
+      <HintPath>packages\Emgu.CV.4.4.0.4061\lib\netstandard2.0\Emgu.CV.Platform.NetStandard.dll</HintPath>
     </Reference>
     <Reference Include="FFmpeg.AutoGen, Version=4.2.2.1, Culture=neutral, PublicKeyToken=9b7632533a381715, processorArchitecture=MSIL">
       <HintPath>packages\FFmpeg.AutoGen.4.2.2.1\lib\net45\FFmpeg.AutoGen.dll</HintPath>
@@ -3083,7 +3083,21 @@ if "$(ConfigurationName)" == "Release" (
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets'))" />
-    <Error Condition="!Exists('packages\Emgu.CV.runtime.windows.4.4.0.4099\build\Emgu.CV.runtime.windows.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Emgu.CV.runtime.windows.4.4.0.4099\build\Emgu.CV.runtime.windows.targets'))" />
+    <Error Condition="!Exists('packages\Emgu.CV.runtime.windows.cuda.blas.11.1.218\build\Emgu.CV.runtime.windows.cuda.blas.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Emgu.CV.runtime.windows.cuda.blas.11.1.218\build\Emgu.CV.runtime.windows.cuda.blas.targets'))" />
+    <Error Condition="!Exists('packages\Emgu.CV.runtime.windows.cuda.cufft.11.1.218\build\Emgu.CV.runtime.windows.cuda.cufft.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Emgu.CV.runtime.windows.cuda.cufft.11.1.218\build\Emgu.CV.runtime.windows.cuda.cufft.targets'))" />
+    <Error Condition="!Exists('packages\Emgu.CV.runtime.windows.cuda.dnn.cnn.8.0.1\build\Emgu.CV.runtime.windows.cuda.dnn.cnn.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Emgu.CV.runtime.windows.cuda.dnn.cnn.8.0.1\build\Emgu.CV.runtime.windows.cuda.dnn.cnn.targets'))" />
+    <Error Condition="!Exists('packages\Emgu.CV.runtime.windows.cuda.dnn.ops.8.0.1\build\Emgu.CV.runtime.windows.cuda.dnn.ops.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Emgu.CV.runtime.windows.cuda.dnn.ops.8.0.1\build\Emgu.CV.runtime.windows.cuda.dnn.ops.targets'))" />
+    <Error Condition="!Exists('packages\Emgu.CV.runtime.windows.cuda.dnn.8.0.1\build\Emgu.CV.runtime.windows.cuda.dnn.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Emgu.CV.runtime.windows.cuda.dnn.8.0.1\build\Emgu.CV.runtime.windows.cuda.dnn.targets'))" />
+    <Error Condition="!Exists('packages\Emgu.CV.runtime.windows.cuda.npp.11.1.218\build\Emgu.CV.runtime.windows.cuda.npp.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Emgu.CV.runtime.windows.cuda.npp.11.1.218\build\Emgu.CV.runtime.windows.cuda.npp.targets'))" />
+    <Error Condition="!Exists('packages\Emgu.CV.runtime.windows.4.4.0.4061\build\Emgu.CV.runtime.windows.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Emgu.CV.runtime.windows.4.4.0.4061\build\Emgu.CV.runtime.windows.targets'))" />
+    <Error Condition="!Exists('packages\Emgu.CV.runtime.windows.cuda.4.4.0.4061\build\Emgu.CV.runtime.windows.cuda.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Emgu.CV.runtime.windows.cuda.4.4.0.4061\build\Emgu.CV.runtime.windows.cuda.targets'))" />
   </Target>
-  <Import Project="packages\Emgu.CV.runtime.windows.4.4.0.4099\build\Emgu.CV.runtime.windows.targets" Condition="Exists('packages\Emgu.CV.runtime.windows.4.4.0.4099\build\Emgu.CV.runtime.windows.targets')" />
+  <Import Project="packages\Emgu.CV.runtime.windows.cuda.blas.11.1.218\build\Emgu.CV.runtime.windows.cuda.blas.targets" Condition="Exists('packages\Emgu.CV.runtime.windows.cuda.blas.11.1.218\build\Emgu.CV.runtime.windows.cuda.blas.targets')" />
+  <Import Project="packages\Emgu.CV.runtime.windows.cuda.cufft.11.1.218\build\Emgu.CV.runtime.windows.cuda.cufft.targets" Condition="Exists('packages\Emgu.CV.runtime.windows.cuda.cufft.11.1.218\build\Emgu.CV.runtime.windows.cuda.cufft.targets')" />
+  <Import Project="packages\Emgu.CV.runtime.windows.cuda.dnn.cnn.8.0.1\build\Emgu.CV.runtime.windows.cuda.dnn.cnn.targets" Condition="Exists('packages\Emgu.CV.runtime.windows.cuda.dnn.cnn.8.0.1\build\Emgu.CV.runtime.windows.cuda.dnn.cnn.targets')" />
+  <Import Project="packages\Emgu.CV.runtime.windows.cuda.dnn.ops.8.0.1\build\Emgu.CV.runtime.windows.cuda.dnn.ops.targets" Condition="Exists('packages\Emgu.CV.runtime.windows.cuda.dnn.ops.8.0.1\build\Emgu.CV.runtime.windows.cuda.dnn.ops.targets')" />
+  <Import Project="packages\Emgu.CV.runtime.windows.cuda.dnn.8.0.1\build\Emgu.CV.runtime.windows.cuda.dnn.targets" Condition="Exists('packages\Emgu.CV.runtime.windows.cuda.dnn.8.0.1\build\Emgu.CV.runtime.windows.cuda.dnn.targets')" />
+  <Import Project="packages\Emgu.CV.runtime.windows.cuda.npp.11.1.218\build\Emgu.CV.runtime.windows.cuda.npp.targets" Condition="Exists('packages\Emgu.CV.runtime.windows.cuda.npp.11.1.218\build\Emgu.CV.runtime.windows.cuda.npp.targets')" />
+  <Import Project="packages\Emgu.CV.runtime.windows.4.4.0.4061\build\Emgu.CV.runtime.windows.targets" Condition="Exists('packages\Emgu.CV.runtime.windows.4.4.0.4061\build\Emgu.CV.runtime.windows.targets')" />
+  <Import Project="packages\Emgu.CV.runtime.windows.cuda.4.4.0.4061\build\Emgu.CV.runtime.windows.cuda.targets" Condition="Exists('packages\Emgu.CV.runtime.windows.cuda.4.4.0.4061\build\Emgu.CV.runtime.windows.cuda.targets')" />
 </Project>
