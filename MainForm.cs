@@ -1478,22 +1478,28 @@ namespace iSpyApplication
                 }
                 if (view != null)
                     _views.Remove(view);
-
                 
                 var gv = new GridView(this, ref cg);
                 gv.Show();
                 gv.BringToFront();
                 gv.Focus();
                 _views.Add(gv);
-                return;
-                
-               
+                return;              
             }
-
         }
 
         private void EmbedFormInPanel(Form form, Panel panel)
         {
+            //giải phóng form đã có trong panel
+            foreach (Control control in panel.Controls)
+            {
+                // Kiểm tra nếu control là một Form
+                if (control is Form forms && control!=form)
+                {
+                    forms.Close();    // Đóng form
+                    forms.Dispose();  // Giải phóng tài nguyên của form
+                }
+            }
             // Xóa nội dung hiện có trong Panel (nếu cần)
             panel.Controls.Clear();
             // Thiết lập form để nó hoạt động như một control, không phải là một cửa sổ độc lập
@@ -1508,7 +1514,7 @@ namespace iSpyApplication
             form.Show();
         }
 
-        internal void ShowGridView(string name)
+        internal void ShowGridView(string name,bool showInMain = false)
         {
             configurationGrid cg = Conf.GridViews.FirstOrDefault(p => p.name == name);
             if (cg != null)
@@ -1520,7 +1526,10 @@ namespace iSpyApplication
                     {
                         if (g.Cg == cg)
                         {
-                            EmbedFormInPanel(g, splitContainer4.Panel2);
+                            if (showInMain)
+                            {
+                                EmbedFormInPanel(g, splitContainer4.Panel2);
+                            }
                             g.BringToFront();
                             g.Focus();
                             return;
@@ -1534,7 +1543,10 @@ namespace iSpyApplication
                         
                 }
                 var gv = new GridView(this, ref cg);
-                EmbedFormInPanel(gv, splitContainer4.Panel2);
+                if (showInMain)
+                {
+                    EmbedFormInPanel(gv, splitContainer4.Panel2);
+                }
                 gv.Show();
                 _views.Add(gv);
             }
@@ -7334,7 +7346,7 @@ namespace iSpyApplication
             if (listBox1.SelectedIndex != -1) 
             {
                 string selectedGridName = listBox1.SelectedItem.ToString(); 
-                ShowGridView(selectedGridName); 
+                ShowGridView(selectedGridName,true); 
             }
         }
 
