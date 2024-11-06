@@ -347,6 +347,7 @@ public partial class configuration {
     private configurationGroup[] permissionsField;
     
     private string chosenGroupNameField;
+    private string lastChosrGridField= "";
 
     public configuration() {
         this.wSPasswordEncryptedField = false;
@@ -2074,6 +2075,17 @@ public partial class configuration {
         set
         {
             this.chosenGroupNameField = value;
+        }
+    }
+    public string LastChoseGrid
+    {
+        get
+        {
+            return this.lastChosrGridField;
+        }
+        set
+        {
+            this.lastChosrGridField = value;
         }
     }
 }

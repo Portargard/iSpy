@@ -601,7 +601,10 @@ namespace iSpyApplication
             btnCamPtz.Enabled = true;
 
             _pnlCameras.BringToFront();
-            splitContainer4.SendToBack();
+            if (Conf.LastChoseGrid != string.Empty)
+            {
+                listBox1.SelectedIndex = listBox1.FindString(Conf.LastChoseGrid);
+            }
         }
 
 
@@ -1528,6 +1531,10 @@ namespace iSpyApplication
                         {
                             if (showInMain)
                             {
+                                if (Conf.LastChoseGrid != name)
+                                {
+                                    Conf.LastChoseGrid = name;
+                                }
                                 EmbedFormInPanel(g, splitContainer4.Panel2);
                             }
                             g.BringToFront();
@@ -1545,6 +1552,10 @@ namespace iSpyApplication
                 var gv = new GridView(this, ref cg);
                 if (showInMain)
                 {
+                    if (Conf.LastChoseGrid != name)
+                    {
+                        Conf.LastChoseGrid = name;
+                    }
                     EmbedFormInPanel(gv, splitContainer4.Panel2);
                 }
                 gv.Show();
@@ -7353,13 +7364,11 @@ namespace iSpyApplication
         private void ShowGridAll_Click(object sender, EventArgs e)
         {
             _pnlCameras.SendToBack();
-            splitContainer4.BringToFront();
         }
 
         private void toolStripButton1_Click(object sender, EventArgs e)
         {
             _pnlCameras.BringToFront(); 
-            splitContainer4.SendToBack();
         }
 
         private void humanDetectToolStripMenuItem_Click(object sender, EventArgs e)
