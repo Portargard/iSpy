@@ -32,9 +32,11 @@ namespace iSpyApplication.Controls
         {
             CheckedCameraIDs = new List<int>();
             CheckedMicIDs = new List<int>();
+            StartDate = dateTimePicker1.Value.Date;
+            EndDate = dateTimePicker2.Value.Date;
 
-            string selectedCameraName = "";
-
+            // Gọi hàm tìm kiếm video với camera và khoảng thời gian đã chọn
+            List<string> foundVideos = new List<string>();
             // Duyệt qua danh sách các đối tượng đã được chọn
             for (int i = 0; i < clbObjects.Items.Count; i++)
             {
@@ -44,13 +46,14 @@ namespace iSpyApplication.Controls
                     if (o.Ot == 2) // Loại camera
                     {
                         CheckedCameraIDs.Add(o.ID);
-                        selectedCameraName = o.Name; // Lưu lại tên camera được chọn
+                        foreach (var item in SearchVideos(StartDate, EndDate, o.Name))
+                        {
+                            foundVideos.Add(item);
+                        }
                     }
                 }
             }
 
-            StartDate = dateTimePicker1.Value.Date;
-            EndDate = dateTimePicker2.Value.Date;
 
             if (StartDate > EndDate)
             {
@@ -58,11 +61,9 @@ namespace iSpyApplication.Controls
                 return;
             }
 
-            // Gọi hàm tìm kiếm video với camera và khoảng thời gian đã chọn
-            List<string> foundVideos = SearchVideos(StartDate, EndDate, selectedCameraName);
 
             // Mở FormSearch với danh sách video và tên camera
-            FormSearch formSearch = new FormSearch(foundVideos, selectedCameraName);
+            FormSearch formSearch = new FormSearch(foundVideos);
             formSearch.Owner = this; // Thiết lập Filter làm Owner
             formSearch.Show(); // Hiển thị FormSearch
         }
@@ -158,7 +159,7 @@ namespace iSpyApplication.Controls
 
         private void OpenFormSearch(List<string> foundVideos, string selectedCameraName)
         {
-            formSearch = new FormSearch(foundVideos, selectedCameraName);
+            formSearch = new FormSearch(foundVideos);
             formSearch.Show(); // Mở FormSearch
         }
 

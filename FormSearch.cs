@@ -15,9 +15,8 @@ namespace iSpyApplication
     {
         private List<string> _videos;
         string videoDirectory;
-        private string _cameraFilter; // Biến lưu tên camera
         private Color defaultRowColor;
-        public FormSearch(List<string> videos, string cameraFilter)
+        public FormSearch(List<string> videos)
         {
             InitializeComponent();
 
@@ -29,9 +28,8 @@ namespace iSpyApplication
             dgv_Videos.CellDoubleClick += dgv_Videos_CellDoubleClick_1;
 
             videoDirectory = Program.AppDataPath + @"WebServerRoot\Media\";
-            this.Text = "Search Video - " + cameraFilter; // Hiển thị tên camera trên form
+            this.Text = "Search Video";
             _videos = videos;
-            _cameraFilter = cameraFilter;
         }
         protected override void OnResize(EventArgs e)
         {
