@@ -22,10 +22,7 @@ namespace iSpyApplication
 
             dgv_Videos.Dock = DockStyle.Fill;
             defaultRowColor = dgv_Videos.DefaultCellStyle.BackColor;
-            btnMark.Click += btnMark_Click;
-            btnUnmark.Click += btnUnmark_Click;
-            btnDeleteVideo.Click += btnDeleteVideo_Click;
-            dgv_Videos.CellDoubleClick += dgv_Videos_CellDoubleClick_1;
+
 
             videoDirectory = Program.AppDataPath + @"WebServerRoot\Media\";
             this.Text = "Search Video";
@@ -41,11 +38,14 @@ namespace iSpyApplication
 
         private void FormSearch_Load(object sender, EventArgs e)
         {
-            LoadVideosToDataGridView();
             LoadMarkedVideosFromFile(); // Nạp danh sách video đã đánh dấu từ file JSON
             LoadVideosToDataGridView(); // Hiển thị danh sách video trên DataGridView
                                         // Kiểm tra và xóa các video không được đánh dấu nếu quá 30 ngày
             DeleteOldUnmarkedVideos();
+            if (_videos.Count == 0)
+            {
+                MessageBox.Show("Không có video nào phù hợp với kết quả tìm kiếm.");
+            }
         }
 
         private void LoadVideosToDataGridView()
@@ -82,11 +82,6 @@ namespace iSpyApplication
                 {
                     dgv_Videos.Rows[rowIndex].DefaultCellStyle.BackColor = Color.Yellow; // Màu đánh dấu
                 }
-            }
-
-            if (_videos.Count == 0)
-            {
-                MessageBox.Show("Không có video nào phù hợp với kết quả tìm kiếm.");
             }
         }
 
